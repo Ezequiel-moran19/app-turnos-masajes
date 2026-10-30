@@ -1,0 +1,160 @@
+
+<section id="contacto">
+  <div class="wrap">
+    <p class="eyebrow" appReveal>Reserva de turno</p>
+    <h2 appReveal>Reservá tu turno en un minuto</h2>
+
+    <p class="lead" appReveal>
+      Elegí el día y el horario. El mensaje se arma automáticamente y lo enviás por WhatsApp.
+      El turno queda confirmado cuando te respondo.
+    </p>
+
+    <div class="book">
+      <form class="card" appReveal novalidate (submit)="onSubmit($event)">
+
+        <!-- SELECCIÓN DE SESIÓN DESACTIVADA POR AHORA
+        <label class="sl">
+          1. Sesión
+          <select (change)="onSession($event)">
+            @for (o of store.options; track o.name; let i = $index) {
+              <option [value]="i" [selected]="i === store.sessionIndex()">
+                {{ store.optionLabel(i) }}
+              </option>
+            }
+          </select>
+        </label>
+        -->
+
+        <div class="step" role="group" aria-labelledby="lbl-day">
+          <span class="sl" id="lbl-day">1. Día</span>
+
+          <div class="days">
+            @for (d of store.dayOptions(); track d.key) {
+              <button
+                type="button"
+                class="opt"
+                [attr.aria-pressed]="d.selected"
+                (click)="store.pickDay(d.key)"
+                >
+                <!-- (click)="store.pickDay('dia-invalido') -->
+                <small>{{ d.weekday }}</small>
+                <b>{{ d.day }}</b>
+                <small>{{ d.month }}</small>
+              </button>
+            } @empty {
+              <p class="hint">
+                No hay días para reservar en las próximas semanas. Escribime por WhatsApp.
+              </p>
+            }
+          </div>
+        </div>
+
+        <div class="step" role="group" aria-labelledby="lbl-time">
+          <span class="sl" id="lbl-time">2. Horario</span>
+
+          <div class="times">
+            @for (t of store.slots(); track t) {
+              <button
+                type="button"
+                class="opt"
+                [attr.aria-pressed]="t === store.selectedTime()"
+                (click)="store.pickTime(t)"
+              >
+                <b>{{ t }}</b>
+              </button>
+            }
+          </div>
+
+          @if (!store.selectedDate()) {
+            <p class="hint">Elegí un día para ver los horarios.</p>
+          }
+        </div>
+
+        <label class="sl">
+          3. Nombre
+          <input
+            id="fName"
+            autocomplete="name"
+            placeholder="Tu nombre"
+            [value]="store.name()"
+            (input)="store.name.set(textOf($event))"
+          />
+        </label>
+
+        <label class="sl">
+          Comentarios (opcional)
+          <textarea
+            placeholder="Zona a trabajar, molestias o algo que quieras avisar"
+            [value]="store.comments()"
+            (input)="store.comments.set(textOf($event))"
+          ></textarea>
+        </label>
+      </form>
+
+      <aside class="card summary" appReveal aria-label="Resumen de tu turno">
+        <h3>Tu turno</h3>
+
+        <dl class="sum">
+          <div>
+            <dt>Duración</dt>
+            <dd>60 minutos</dd>
+          </div>
+          <div>
+            <dt>Día</dt>
+            <dd>{{ store.selectedDateText() || '—' }}</dd>
+          </div>
+          <div>
+            <dt>Horario</dt>
+            <dd>
+              {{ store.selectedTime() ? store.selectedTime() + ' hs' : '—' }}
+            </dd>
+          </div>
+          <div class="tot">
+            <dt>Precio</dt>
+            <dd>$25.000</dd>
+          </div>
+        </dl>
+
+        @if (store.error()) {
+          <p class="err" role="alert">{{ store.error() }}</p>
+        }
+
+        <a
+          class="btn pri"
+          [href]="store.whatsappUrl()"
+          target="_blank"
+          rel="noopener"
+          (click)="onSend($event)"
+        >
+          Reservar por WhatsApp
+        </a>
+
+        <p class="fine">
+          Se abre WhatsApp con el mensaje listo para enviar.
+        </p>
+
+        <div class="chans">
+          @for (c of contacts; track c.name) {
+            @if (c.href) {
+              <a class="chan" [href]="c.href" target="_blank" rel="noopener">
+                <app-icon [name]="c.icon" />
+                <div>
+                  <b>{{ c.name }}</b>
+                  <small>{{ c.value }}</small>
+                </div>
+              </a>
+            } @else {
+              <div class="chan">
+                <app-icon [name]="c.icon" />
+                <div>
+                  <b>{{ c.name }}</b>
+                  <small>{{ c.value }}</small>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
