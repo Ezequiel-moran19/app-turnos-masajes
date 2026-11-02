@@ -1,60 +1,119 @@
-http://localhost:4200/admin/
 # Masajes y recuperación muscular · Lanús Oeste
 
-Sitio de una sola página hecho con **Angular 22**, TypeScript, HTML y CSS (sin librerías de UI).
-Incluye sesiones con precio, mapa con radio de atención (sin marcar la dirección) y reserva de turno por WhatsApp.
+Aplicación web para consultar servicios de masajes, conocer las modalidades de atención y solicitar turnos de manera online.
+
+Desarrollada con Angular 22 y TypeScript, con una interfaz adaptable a dispositivos móviles y computadoras.
+
+## Características
+
+- Presentación de los servicios disponibles.
+- Información sobre masajes deportivos y descontracturantes.
+- Información sobre recuperación muscular.
+- Consulta de horarios y disponibilidad.
+- Solicitud de turnos online.
+- Integración con WhatsApp para facilitar el contacto.
+- Mapa de zona de atención con ubicación aproximada, preservando la dirección particular.
+- Diseño responsive.
+
+## Tecnologías
+
+- Angular 22
+- TypeScript 6
+- Bootstrap 5
+- Bootstrap Icons
+- Supabase
+- Leaflet
+- Playwright
 
 ## Requisitos
 
-- Node.js 22.12 o superior
-- npm
+- Node.js 22.12 o superior.
+- npm.
 
-## Uso
+## Instalación
+
+Clonar el repositorio:
+
+```bash
+git clone URL_DEL_REPOSITORIO
+```
+
+Ingresar al proyecto:
+
+```bash
+cd page-masajes
+```
+
+Instalar dependencias:
 
 ```bash
 npm install
-npm start        # desarrollo en http://localhost:4200
-npm run build    # producción, sale en dist/masajes-lanus-oeste/browser
 ```
 
-La carpeta `dist/.../browser` se sube tal cual a cualquier hosting estático.
-Si el sitio no queda en la raíz del dominio, compilar con `npx ng build --base-href /ruta/`.
+Iniciar el servidor de desarrollo:
 
-## Qué editar
-
-Todo está en `src/app/core/site.config.ts`:
-
-| Qué | Dónde |
-| --- | --- |
-| Número de WhatsApp | `SITE.whatsapp` |
-| Días, horario de atención, duración del turno | `SITE.schedule` |
-| Sesiones, duración y **precios** | `SERVICES` |
-| Aviso "Precios de ejemplo" | `SITE.pricesAreExample` (poner `false` con precios reales) |
-| Formación, contactos (Instagram) | `TRAINING`, `CONTACTS` |
-| Centro, radio y etiqueta del mapa | `SITE.zone` |
-
-Los precios cargados son de ejemplo y hay que reemplazarlos.
-
-## Mapa y privacidad
-
-- El mapa dibuja solo un círculo; no hay marcador.
-- El centro del círculo está **desplazado a propósito** de la dirección real. Verificá que tu domicilio quede dentro del radio y no en el centro; si no, ajustá `center` y `radiusMeters`.
-- No escribas la dirección real en ningún archivo del proyecto: el código es público.
-- Los mosaicos vienen de OpenStreetMap. Funcionan en un sitio publicado (http/https); abriendo los archivos desde el disco el servidor de mapas puede bloquearlos. Sin conexión se muestra un mapa esquemático.
-
-## Cómo funciona la reserva
-
-1. La persona elige sesión, día y horario, y escribe su nombre.
-2. Los horarios dependen de la duración de la sesión y del horario de atención.
-3. El botón abre WhatsApp con el mensaje armado (sesión, día, horario, precio, nombre y comentarios).
-
-No hay backend ni agenda: la página no sabe qué horarios ya están ocupados. El turno queda confirmado cuando respondés por WhatsApp.
-
-## Estructura
-
+```bash
+npm start
 ```
-src/app/
-  core/       configuración, modelos, fechas y estado de la reserva (signals)
-  shared/     íconos, directiva de aparición, pipe de precios
-  sections/   header, hero, servicios, horarios, formación, zona, reserva, footer
+
+La aplicación estará disponible en:
+
+http://localhost:4200/
+
+## Compilación
+
+Generar la versión de producción:
+
+```bash
+npm run build
 ```
+
+Los archivos compilados se generan en:
+
+```text
+dist/masajes-lanus-oeste/browser/
+```
+
+## Pruebas
+
+El proyecto utiliza Playwright para realizar pruebas automatizadas de extremo a extremo (E2E).
+
+Ejecutar todas las pruebas:
+
+```bash
+npx playwright test
+```
+
+Visualizar el informe:
+
+```bash
+npx playwright show-report
+```
+
+## Estructura general
+
+```text
+src/
+├── app/
+│   ├── core/
+│   ├── public/
+│   └── ...
+├── environments/
+├── index.html
+└── styles.css
+
+e2e/
+├── pages/
+├── support/
+└── tests/
+```
+
+## Privacidad y configuración
+
+La aplicación utiliza una ubicación aproximada para representar la zona de atención. No se publica la dirección particular.
+
+La configuración de conexión utiliza una clave pública de Supabase. Las claves privadas y credenciales sensibles no deben incluirse en el repositorio.
+
+## Estado del proyecto
+
+Proyecto en desarrollo, con funcionalidades de consulta de servicios y solicitud de turnos, pruebas automatizadas y proceso de integración continua mediante GitHub Actions.
