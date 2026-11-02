@@ -66,9 +66,7 @@
           </div>
 
           <div>
-            <label class="form-label sl" for="fComments">
-              Algo que debamos saber antes de tu visita? (opcional)
-            </label>
+            <label class="form-label sl" for="fComments"> Algo que debamos saber antes de tu visita? (opcional) </label>
             <textarea id="fComments" class="form-control" rows="3"
               placeholder="Zona a trabajar, molestias o algo que quieras avisar"
               [value]="store.comments()"
@@ -92,9 +90,7 @@
 
               <div>
                 <dt>Horario</dt>
-                <dd>
-                  {{ store.selectedTime() ? store.selectedTime() + ' hs' : '—' }}
-                </dd>
+                <dd> {{ store.selectedTime() ? store.selectedTime() + ' hs' : '—' }} </dd>
               </div>
 
               <div class="tot">
