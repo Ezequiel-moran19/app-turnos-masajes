@@ -1,17 +1,9 @@
-
 import { computed, inject, Injectable, signal } from '@angular/core';
-
 import { BookingService } from './services/booking.service';
 import { ScheduleService } from './services/schedule.service';
-
-import {
-  DayOption,
-  MissingField,
-  ScheduleExceptionRecord,
-  WeeklyScheduleRecord,
-} from './models';
-
+import { DayOption, MissingField, ScheduleExceptionRecord, WeeklyScheduleRecord,} from './models';
 import { CONTACTS } from './site.config';
+import { BookingAccessService } from './services/booking-access.service';
 
 const HORIZON_DAYS = 21;
 const LEAD_MINUTES = 120;
@@ -43,6 +35,8 @@ function addMinutes(time: string, minutes: number): string {
 export class BookingStore {
   private readonly bookings = inject(BookingService);
   private readonly schedule = inject(ScheduleService);
+  private readonly bookingAccess = inject(BookingAccessService);
+  private readonly privateBookingUrl = signal('');
 
   readonly name = signal('');
   readonly phone = signal('');
@@ -234,6 +228,10 @@ export class BookingStore {
       throw new Error('No se pudo verificar la disponibilidad.');
     }
 
+    // Generar token privado y su hash.
+    const { token, hash } = await this.bookingAccess.createToken();
+
+    // Crear reserva y guardar el hash en una única operación SQL.
     await this.bookings.create({
       customer_name: this.name().trim(),
       customer_phone: this.phone().trim(),
@@ -242,7 +240,13 @@ export class BookingStore {
       start_time: time,
       end_time: addMinutes(time, BOOKING_DURATION_MINUTES),
       notes: this.comments().trim(),
+      token_hash: hash,
     });
+
+    // Conservar el enlace para incluirlo en WhatsApp.
+    this.privateBookingUrl.set(
+      this.bookingAccess.getAccessUrl(token),
+    );
 
     this.taken.update((times) => [...times, time]);
   }
@@ -253,6 +257,7 @@ export class BookingStore {
     this.comments.set('');
     this.error.set('');
     this.selectedTime.set(null);
+    this.privateBookingUrl.set('');
   }
 
   whatsappUrl(): string {
@@ -263,12 +268,15 @@ export class BookingStore {
       `Precio: ${this.priceText()}`,
       `Nombre: ${this.name().trim() || '—'}`,
       `Teléfono: ${this.phone().trim() || '—'}`,
+      '',
+      'Podés consultar el estado de tu turno o cancelarlo desde este enlace:',
+      this.privateBookingUrl(),
     ];
 
     const comments = this.comments().trim();
 
     if (comments) {
-      lines.push(`Comentarios: ${comments}`);
+      lines.splice(6, 0, `Comentarios: ${comments}`);
     }
 
     return `https://wa.me/${this.whatsappNumber()}?text=${encodeURIComponent(lines.join('\n'))}`;

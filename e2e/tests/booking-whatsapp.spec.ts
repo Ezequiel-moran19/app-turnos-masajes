@@ -42,7 +42,7 @@ test.describe('Reserva de turnos - Masajes', () => {
           (_, weekday) => ({
             weekday,
             enabled: true,
-            slots: ['23:00'],
+            slots: ['22:00'],
           }),
         );
 
@@ -74,14 +74,19 @@ test.describe('Reserva de turnos - Masajes', () => {
         return;
       }
 
-      // Simular el registro de una reserva.
-      if (path.endsWith('/bookings') && method === 'POST') {
+      // Simular la creación de una reserva mediante la nueva RPC.
+      if (
+        path.endsWith('/rpc/public_create_booking_with_access') &&
+        method === 'POST'
+      ) {
         createdBooking = request.postDataJSON();
 
         await route.fulfill({
-          status: 201,
+          status: 200,
           headers,
-          body: '',
+          body: JSON.stringify(
+            '11111111-1111-4111-8111-111111111111',
+          ),
         });
         return;
       }
@@ -210,7 +215,7 @@ test.describe('Reserva de turnos - Masajes', () => {
       'wa.me',
     ]).toContain(whatsappUrl.hostname);
 
-    // Validar el destinatario según el formato de URL.
+    // Validar el destinatario.
     const recipient =
       whatsappUrl.hostname === 'wa.me'
         ? whatsappUrl.pathname.replace(/\//g, '')
@@ -218,7 +223,7 @@ test.describe('Reserva de turnos - Masajes', () => {
 
     expect(recipient).toMatch(/^\d+$/);
 
-    // Validar el mensaje enviado.
+    // Validar el mensaje.
     expect(message).not.toBeNull();
 
     expect(message).toContain(
@@ -233,20 +238,32 @@ test.describe('Reserva de turnos - Masajes', () => {
       'Comentarios: Molestia en la zona lumbar. Prueba automatizada.',
     );
 
-    // Verificar que se haya enviado la reserva al servicio.
+    // Verificar que el mensaje incluya el enlace privado.
+    expect(message).toContain(
+      'Podés consultar el estado de tu turno o cancelarlo desde este enlace:',
+    );
+
+    expect(message).toMatch(
+      /mi-turno\/[0-9a-f]{64}/,
+    );
+
+    // Verificar que se haya llamado a la nueva RPC.
     expect(createdBooking).not.toBeNull();
 
     expect(createdBooking).toMatchObject({
-      customer_name: 'Ezequiel Prueba',
-      customer_phone: '1123456789',
-      service_id: null,
-      status: 'pending',
-      notes: 'Molestia en la zona lumbar. Prueba automatizada.',
+      p_customer_name: 'Ezequiel Prueba',
+      p_customer_phone: '1123456789',
+      p_service_id: null,
+      p_start_time: '22:00',
+      p_end_time: '23:00',
+      p_notes: 'Molestia en la zona lumbar. Prueba automatizada.',
     });
 
-    expect(createdBooking?.booking_date).toBeTruthy();
-    expect(createdBooking?.start_time).toBe('23:00');
-    expect(createdBooking?.end_time).toBe('00:00');
+    expect(createdBooking?.p_booking_date).toBeTruthy();
+
+    expect(createdBooking?.p_token_hash).toMatch(
+      /^[0-9a-f]{64}$/,
+    );
 
     await popup.close();
   });
