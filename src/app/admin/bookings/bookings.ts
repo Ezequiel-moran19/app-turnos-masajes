@@ -1,24 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
-
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal,} from '@angular/core';
 import { BookingRecord } from '../../core/models';
 import { BookingService } from '../../core/services/booking.service';
 import { BookingAccessService } from '../../core/services/booking-access.service';
-
-import {
-  BookingStatus,
-  formatDate,
-  hhmm,
-  STATUS_LABEL,
-  todayISO,
-  whatsappLink,
-} from '../../core/booking-status';
+import { BookingStatus, formatDate, hhmm, STATUS_LABEL, todayISO, whatsappLink,} from '../../core/booking-status';
 
 type StatusFilter = 'all' | BookingStatus;
 
@@ -104,7 +88,19 @@ export class Bookings implements OnInit {
     this.error.set('');
 
     try {
-      this.rows.set(await this.service.list());
+      const bookings = await this.service.list();
+
+      console.table(
+        bookings.map((row) => ({
+          id: row.id,
+          cliente: row.customer_name,
+          fecha: row.booking_date,
+          horario: row.start_time,
+          estado: row.status,
+        })),
+      );
+
+      this.rows.set(bookings);
     } catch (error) {
       this.error.set(
         error instanceof Error
@@ -125,59 +121,59 @@ export class Bookings implements OnInit {
     ) {
       return;
     }
-
+    
     const previous = row.status;
-
+    
     this.error.set('');
     this.busyId.set(row.id);
     this.patch(row.id, status);
-
+    
     try {
       await this.service.updateStatus(row.id, status);
     } catch (error) {
       this.patch(row.id, previous);
       this.error.set(
         error instanceof Error
-          ? error.message
-          : 'No se pudo actualizar el turno.',
+        ? error.message
+        : 'No se pudo actualizar el turno.',
       );
     } finally {
       this.busyId.set(null);
     }
   }
-
+  
   async generateAccessLink(row: BookingRecord): Promise<void> {
     this.accessError.set('');
     this.accessMessage.set('');
     this.accessBusyId.set(row.id);
-
+    
     try {
       const link = await this.accessService.createAccessLink(row.id);
-
+      
       this.accessLinks.update((links) => ({
         ...links,
         [row.id]: link,
       }));
-
+      
       this.accessMessage.set(
         `Se generó el enlace privado para ${row.customer_name}.`,
       );
     } catch (error) {
       this.accessError.set(
         error instanceof Error
-          ? error.message
-          : 'No se pudo generar el enlace privado.',
+        ? error.message
+        : 'No se pudo generar el enlace privado.',
       );
     } finally {
       this.accessBusyId.set(null);
     }
   }
-
+  
   async copyAccessLink(row: BookingRecord): Promise<void> {
     const link = this.accessLinks()[row.id];
-
+    
     if (!link) return;
-
+    
     try {
       await navigator.clipboard.writeText(link);
       this.accessMessage.set('Enlace copiado al portapapeles.');
@@ -188,26 +184,43 @@ export class Bookings implements OnInit {
       );
     }
   }
-
+  
   accessWhatsappUrl(row: BookingRecord): string {
     const link = this.accessLinks()[row.id];
-
+    
     const message = [
       `Hola ${row.customer_name}.`,
       'Desde este enlace podés consultar el estado de tu turno y cancelarlo si lo necesitás:',
       link,
     ].join('\n');
-
+    
     return whatsappLink(row.customer_phone, message);
   }
-
+  
   private patch(id: string, status: BookingStatus): void {
     this.rows.update((rows) =>
       rows.map((row) => (row.id === id ? { ...row, status } : row)),
-    );
-  }
-
-  protected onSearch(event: Event): void {
-    this.query.set((event.target as HTMLInputElement).value);
-  }
+  );
 }
+
+protected onSearch(event: Event): void {
+  this.query.set((event.target as HTMLInputElement).value);
+}
+}
+
+// async load(): Promise<void> {
+//   this.loading.set(true);
+//   this.error.set('');
+
+//   try {
+//     this.rows.set(await this.service.list());
+//   } catch (error) {
+//     this.error.set(
+//       error instanceof Error
+//         ? error.message
+//         : 'No se pudieron cargar los turnos.',
+//     );
+//   } finally {
+//     this.loading.set(false);
+//   }
+// }

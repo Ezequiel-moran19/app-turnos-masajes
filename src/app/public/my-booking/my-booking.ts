@@ -1,15 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {
-  BookingAccessService,
-  PrivateBooking,
-} from '../../core/services/booking-access.service';
+import { BookingAccessService, PrivateBooking } from '../../core/services/booking-access.service';
 
 @Component({
   selector: 'app-my-booking',

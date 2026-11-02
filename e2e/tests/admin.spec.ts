@@ -142,7 +142,8 @@ test.describe('Administración - Turnos', () => {
     });
 
     await expect(row).toBeVisible();
-    await expect(row.locator('[data-status="confirmed"]')).toBeVisible();
+    await expect(row.locator('td').nth(4).locator('.badge'))
+      .toHaveClass(/text-bg-success/);
   });
 
   test('cancela un turno después de confirmar la acción', async ({ page }) => {
@@ -157,7 +158,8 @@ test.describe('Administración - Turnos', () => {
     });
 
     await expect(row).toBeVisible();
-    await expect(row.locator('[data-status="cancelled"]')).toBeVisible();
+    await expect(row.locator('td').nth(4).locator('.badge'))
+      .toHaveClass(/text-bg-danger/);
   });
 
   test('permite reabrir un turno cancelado', async ({ page }) => {
@@ -172,7 +174,8 @@ test.describe('Administración - Turnos', () => {
     });
 
     await expect(row).toBeVisible();
-    await expect(row.locator('[data-status="pending"]')).toBeVisible();
+    await expect(row.locator('td').nth(4).locator('.badge'))
+      .toHaveClass(/text-bg-warning/);
   });
 });
 
