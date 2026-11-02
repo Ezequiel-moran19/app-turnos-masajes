@@ -5,7 +5,7 @@ import { DayOption, MissingField, ScheduleExceptionRecord, WeeklyScheduleRecord,
 import { CONTACTS } from './site.config';
 import { BookingAccessService } from './services/booking-access.service';
 
-const HORIZON_DAYS = 21;
+const HORIZON_DAYS = 14;
 const LEAD_MINUTES = 120;
 
 // Configuración temporal del turno general.
@@ -52,9 +52,7 @@ export class BookingStore {
   private readonly taken = signal<string[]>([]);
   private readonly availabilityFailed = signal(false);
 
-  readonly priceText = computed(
-    () => '$' + BOOKING_PRICE.toLocaleString('es-AR'),
-  );
+  readonly priceText = computed( () => '$' + BOOKING_PRICE.toLocaleString('es-AR') );
 
   readonly dayOptions = computed<DayOption[]>(() => {
     const selected = this.selectedDate();
@@ -283,15 +281,9 @@ export class BookingStore {
   }
 
   private whatsappNumber(): string {
-    const contact = CONTACTS.find(
-      (item) => item.icon === 'whatsapp',
-    );
-
+    const contact = CONTACTS.find( (item) => item.icon === 'whatsapp' );
     const href = contact?.href ?? '';
     const match = href.match(/wa\.me\/(\d+)/);
-
-    return match
-      ? match[1]
-      : (contact?.value ?? '').replace(/\D/g, '');
+    return match ? match[1] : (contact?.value ?? '').replace(/\D/g, '');
   }
 }

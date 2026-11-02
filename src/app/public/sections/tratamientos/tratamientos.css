@@ -2,6 +2,29 @@
   display: block;
 }
 
+.treatment-title {
+  width: fit-content;
+  max-width: 100%;
+  color: #ffffff;
+  background: linear-gradient(90deg, #ffffff 0%, #0eb0a4 35%, #ffffff 65%, #0eb0a4 100%);
+  background-size: 300% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 5s ease-in-out infinite alternate;
+}
+
+@keyframes gradientMove {
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 100% 50%;
+  }
+}
+
 .treatment-card {
   overflow: hidden;
   border: 1px solid var(--line);
@@ -9,15 +32,29 @@
   background: var(--card);
   color: var(--ink);
   box-shadow: var(--sh);
+  animation: cardEntrance 0.7s ease both;
+  animation-delay: var(--delay, 0ms);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .treatment-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.10);
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .treatment-image {
-  width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background: var(--soft);
@@ -28,7 +65,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
 }
 
 .treatment-card:hover .treatment-image img {
@@ -95,6 +132,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .treatment-title,
+  .treatment-card {
+    animation: none;
+  }
+
   .treatment-card,
   .treatment-image img {
     transition: none;

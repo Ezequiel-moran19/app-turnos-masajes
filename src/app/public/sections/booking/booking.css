@@ -2,11 +2,29 @@
   display: block;
 }
 
-.booking-layout {
-  margin-top: 32px;
+.booking-title {
+  width: fit-content;
+  max-width: 100%;
+  color: #ffffff;
+  background: linear-gradient(90deg, #ffffff 0%, #0eb0a4 35%, #ffffff 65%, #0eb0a4 100%);
+  background-size: 300% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 5s ease-in-out infinite alternate;
 }
 
-/* Tarjetas */
+@keyframes gradientMove {
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 100% 50%;
+  }
+}
+
 .booking-form,
 .summary {
   --bs-card-bg: var(--card);
@@ -18,11 +36,23 @@
   box-shadow: var(--sh);
 }
 
-/* Textos */
+.summary {
+  position: sticky;
+  top: calc(84px + env(safe-area-inset-top, 0px));
+}
+
+.summary .card-body {
+  padding: 22px;
+}
+
+.summary h3 {
+  color: var(--ink);
+  font-size: 1.15rem;
+}
+
 .booking-form,
 .summary,
-.booking-form label,
-.summary h3 {
+.booking-form label {
   color: var(--ink);
 }
 
@@ -31,16 +61,15 @@
   font-weight: 600;
 }
 
-/* Campos Bootstrap */
 .booking-form .form-control {
   --bs-body-color: var(--ink);
   --bs-body-bg: var(--bg);
   --bs-border-color: var(--line);
-  --bs-secondary-color: var(--mut);
+
+  min-height: 48px;
   color: var(--ink);
   background-color: var(--bg);
   border-color: var(--line);
-  min-height: 48px;
 }
 
 .booking-form .form-control::placeholder {
@@ -60,23 +89,10 @@
   resize: vertical;
 }
 
-/* Días y horarios */
 .step {
   display: grid;
   gap: 10px;
   min-width: 0;
-}
-
-.days {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: 8px;
-}
-
-.times {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
-  gap: 8px;
 }
 
 .opt {
@@ -93,6 +109,7 @@
   font: inherit;
   line-height: 1.25;
   cursor: pointer;
+  transition:background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .opt small {
@@ -107,6 +124,7 @@
 
 .opt:hover {
   border-color: var(--brand);
+  transform: translateY(-2px);
 }
 
 .opt[aria-pressed="true"] {
@@ -117,30 +135,6 @@
 
 .opt[aria-pressed="true"] small {
   color: var(--on-brand);
-}
-
-.hint {
-  color: var(--mut);
-  font-size: 0.9rem;
-}
-
-/* Resumen */
-.summary {
-  position: sticky;
-  top: calc(84px + env(safe-area-inset-top, 0px));
-}
-
-.summary .card-body {
-  padding: 22px;
-}
-
-.summary h3 {
-  font-size: 1.15rem;
-}
-
-.sum {
-  display: grid;
-  gap: 8px;
 }
 
 .sum > div {
@@ -168,33 +162,26 @@
   font-size: 1.2rem;
 }
 
-.fine {
-  color: var(--mut);
-  font-size: 0.82rem;
-}
-
-/* Contactos */
-.chans {
-  display: grid;
-  gap: 0;
-  align-content: start;
-  margin-top: 4px;
-}
-
 .chan {
   padding: 12px 0;
   border-top: 1px solid var(--line);
   color: var(--ink);
   text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.chan:hover {
+  color: var(--brand-ink);
 }
 
 .chan .bi {
   flex: none;
-  font-size: 28px;
   color: var(--brand);
+  font-size: 28px;
 }
 
-.chan b {
+.chan b,
+.chan small {
   display: block;
 }
 
@@ -206,4 +193,10 @@
   .summary {
     position: static;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-title { animation: none; }
+  .opt, .chan { transition: none; }
+  .opt:hover { transform: none; }
 }

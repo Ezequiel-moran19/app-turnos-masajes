@@ -1,21 +1,3 @@
 .sticky {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 30;
-  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid var(--line);
-}
-
-.sticky .btn {
-  width: 100%;
-}
-
-@media (min-width: 800px) {
-  .sticky {
-    display: none;
-  }
+  display: none;
 }

@@ -1,13 +1,20 @@
-:host {
-  display: block;
+:host { display: block; }
+.hero { position: relative; padding: 48px 0 56px; }
+.hero-title { color: #ffffff; }
+
+.hero-title span {
+  background: linear-gradient(90deg, #ffffff 0%, #0eb0a4 35%, #ffffff 65%, #0eb0a4 100%);
+  background-size: 300% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 5s ease-in-out infinite alternate;
 }
 
-.hero {
-  padding: 48px 0 56px;
-}
-
-.hero h1 span {
-  color: var(--brand-ink);
+@keyframes gradientMove {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
 }
 
 .hero .lead {
@@ -69,5 +76,44 @@
 @keyframes float {
   50% {
     transform: translateY(-8px);
+  }
+}
+
+@media (max-width: 991.98px) {
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 64px 0;
+    background-image: url('/img-fondo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgba(7, 28, 32, 0.68);
+  }
+
+  .hero-content { position: relative; z-index: 1; }
+  .hero .lead, .hero .eyebrow { color: #ffffff; }
+  .hero-visual { display: none; }
+  .hero-badge { display: none; }
+
+  .chips li {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-title span,
+  .hero-badge {
+    animation: none;
   }
 }

@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, inject, signal, viewChild } from '@angular/core';
 import type { Map as LeafletMap } from 'leaflet';
 import { SITE } from '../../../core/site.config';
-import { Reveal } from '../../../shared/reveal';
 
 type LeafletModule = typeof import('leaflet');
 
 @Component({
   selector: 'app-zone',
-  imports: [Reveal],
+  imports: [],
   templateUrl: './zone.html',
   styleUrl: './zone.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

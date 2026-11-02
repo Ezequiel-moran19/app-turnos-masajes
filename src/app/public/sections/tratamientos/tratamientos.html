@@ -1,11 +1,8 @@
 <section id="servicios" class="py-5">
   <div class="container">
-
-    <p class="eyebrow mb-2" appReveal>Tratamientos</p>
-
-    <h2 appReveal>Masajes y terapias complementarias</h2>
-
-    <p class="lead mt-3" appReveal>Estos tratamientos se aplican según tus necesidades y el objetivo de cada sesión.</p>
+    <p class="eyebrow mb-2">Tratamientos</p>
+    <h2 class="treatment-title"> Masajes y terapias complementarias </h2>
+    <p class="lead mt-3"> Estos tratamientos se aplican según tus necesidades y el objetivo de cada sesión. </p>
 
     @if (loading()) {
       <p class="mt-4">Cargando tratamientos...</p>
@@ -17,10 +14,11 @@
       <p class="mt-4">Actualmente no hay tratamientos disponibles.</p>
     } @else {
       <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mt-3">
+
         @for (t of treatments(); track t.name; let i = $index) {
           <div class="col">
-            <article
-              class="card treatment-card h-100" [appReveal]="(i % 4) * 0.08" >
+            <article class="card treatment-card h-100" [style.--delay]="(i * 120) + 'ms'">
+
               @if (t.image) {
                 <div class="treatment-image">
                   <img [src]="t.image" [alt]="t.name" loading="lazy" class="card-img-top"/>
@@ -35,9 +33,7 @@
 
                 @if (t.benefits.length > 0) {
                   <div class="benefits mt-auto">
-
                     <span class="benefits-label"> Qué buscamos lograr </span>
-
                     <ul class="list-unstyled mb-0">
                       @for (b of t.benefits; track b) {
                         <li>{{ b }}</li>
@@ -51,6 +47,7 @@
             </article>
           </div>
         }
+
       </div>
     }
 
