@@ -1,0 +1,126 @@
+<div class="bookings-page container-fluid py-4">
+
+  <header class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <p class="eyebrow mb-2">Administración</p>
+      <h1 class="page-title">Turnos</h1>
+      <p class="text-muted mb-0">Reservas guardadas en Supabase.</p>
+    </div>
+
+    <button type="button" class="btn btn-outline-secondary refresh-btn" (click)="load()" [disabled]="loading()">
+      <span class="me-2" aria-hidden="true">↻</span> {{ loading() ? 'Actualizando...' : 'Actualizar' }}
+    </button>
+  </header>
+
+  <section class="booking-toolbar">
+
+    <div class="booking-tabs" role="tablist" aria-label="Filtrar turnos">
+      @for (f of filters; track f.value) {
+        <button type="button" role="tab" class="booking-tab"
+          [class.active]="filter() === f.value" [attr.aria-selected]="filter() === f.value" (click)="filter.set(f.value)">
+          {{ f.label }}
+          <span class="count">{{ counts()[f.value] }}</span>
+        </button>
+      }
+    </div>
+
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+      <div class="search-wrapper">
+        <input type="search" class="form-control" placeholder="Buscar por nombre o teléfono" aria-label="Buscar por nombre o teléfono" [value]="query()" (input)="onSearch($event)" />
+      </div>
+
+      <div class="form-check form-switch upcoming-check">
+        <input id="onlyUpcoming" class="form-check-input" type="checkbox" [checked]="onlyUpcoming()" (change)="onlyUpcoming.set(!onlyUpcoming())" />
+        <label class="form-check-label" for="onlyUpcoming">
+          Solo próximos
+        </label>
+      </div>
+    </div>
+
+  </section>
+
+  @if (error()) {
+    <div class="alert alert-danger mt-3 mb-3" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  @if (loading() && rows().length === 0) {
+    <div class="loading-state">
+      <div class="spinner-border spinner-border-sm me-2" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      Cargando turnos...
+    </div>
+  } @else {
+
+    <div class="table-responsive booking-table-wrapper">
+      <table class="table booking-table align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Fecha</th>
+            <th scope="col">Horario</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Servicio</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (row of visible(); track row.id) {
+            <tr [class.busy]="busyId() === row.id">
+
+              <td class="text-nowrap"> {{ formatDate(row.booking_date) }} </td>
+
+              <td class="text-nowrap">  {{ hhmm(row.start_time) }}–{{ hhmm(row.end_time) }} </td>
+
+              <td class="customer-cell">
+                <strong>{{ row.customer_name }}</strong>
+
+                <a class="phone-link" [href]="whatsappLink(row.customer_phone)" target="_blank" rel="noopener">
+                  {{ row.customer_phone }}
+                </a>
+
+                @if (row.notes) {
+                  <small class="customer-notes"> {{ row.notes }} </small>
+                }
+              </td>
+
+              <td> {{ row.services?.name || '—' }}</td>
+
+              <td>
+                <span class="status-badge" [attr.data-status]="row.status" > {{ statusLabel[row.status] }} </span>
+              </td>
+
+              <td>
+                <div class="d-flex flex-wrap gap-2 booking-actions">
+                  @if (row.status === 'pending') {
+                    <button type="button" class="btn btn-sm action-confirm" (click)="setStatus(row, 'confirmed')"> Confirmar </button>
+                  }
+                  @if (row.status === 'confirmed') {
+                    <button type="button" class="btn btn-sm action-confirm" (click)="setStatus(row, 'completed')"> Completar </button>
+                  }
+                  @if (row.status === 'pending' || row.status === 'confirmed') {
+                    <button type="button" class="btn btn-sm action-cancel" (click)="setStatus(row, 'cancelled')"> Cancelar </button>
+                  }
+                  @if (row.status === 'cancelled') {
+                    <button type="button" class="btn btn-sm action-reopen" (click)="setStatus(row, 'pending')"> Reabrir </button>
+                  }
+                </div>
+              </td>
+
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="empty-state">
+                No hay turnos con estos filtros.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+</div>

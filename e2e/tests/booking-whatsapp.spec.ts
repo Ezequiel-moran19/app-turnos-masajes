@@ -1,16 +1,105 @@
-import { test, expect,} from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { HomePage } from '../pages/HomePage';
 import { BookingPage } from '../pages/BookingPage';
 
 test.describe('Reserva de turnos - Masajes', () => {
+  let createdBooking: Record<string, unknown> | null;
+
+  test.beforeEach(async ({ page }) => {
+    createdBooking = null;
+
+    await page.route('**/rest/v1/**', async (route) => {
+      const request = route.request();
+      const url = new URL(request.url());
+      const path = url.pathname;
+      const method = request.method();
+
+      if (method === 'OPTIONS') {
+        await route.fulfill({
+          status: 204,
+          headers: {
+            'access-control-allow-origin': '*',
+            'access-control-allow-headers': '*',
+            'access-control-allow-methods':
+              'GET, POST, PATCH, DELETE, OPTIONS',
+          },
+        });
+        return;
+      }
+
+      const headers = {
+        'access-control-allow-origin': '*',
+        'access-control-allow-headers': '*',
+        'access-control-allow-methods':
+          'GET, POST, PATCH, DELETE, OPTIONS',
+        'content-type': 'application/json',
+      };
+
+      // Simular horarios semanales.
+      if (path.endsWith('/weekly_schedule') && method === 'GET') {
+        const weeklySchedule = Array.from(
+          { length: 7 },
+          (_, weekday) => ({
+            weekday,
+            enabled: true,
+            slots: ['23:00'],
+          }),
+        );
+
+        await route.fulfill({
+          status: 200,
+          headers,
+          body: JSON.stringify(weeklySchedule),
+        });
+        return;
+      }
+
+      // Simular calendario sin excepciones.
+      if (path.endsWith('/schedule_exceptions') && method === 'GET') {
+        await route.fulfill({
+          status: 200,
+          headers,
+          body: JSON.stringify([]),
+        });
+        return;
+      }
+
+      // Simular que ningún horario está ocupado.
+      if (path.endsWith('/rpc/get_taken_slots') && method === 'POST') {
+        await route.fulfill({
+          status: 200,
+          headers,
+          body: JSON.stringify([]),
+        });
+        return;
+      }
+
+      // Simular el registro de una reserva.
+      if (path.endsWith('/bookings') && method === 'POST') {
+        createdBooking = request.postDataJSON();
+
+        await route.fulfill({
+          status: 201,
+          headers,
+          body: '',
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+  });
+
   test('valida que el día sea obligatorio', async ({ page }) => {
     const home = new HomePage(page);
     const booking = new BookingPage(page);
 
     await home.open();
     await home.goToBooking();
-    await booking.reserveLink.click();
-    await booking.expectValidationMessage('Elegí el día del turno.');
+
+    await booking.submit();
+
+    await booking.expectValidationMessage('Elegí un día.');
   });
 
   test('valida que el horario sea obligatorio', async ({ page }) => {
@@ -21,8 +110,9 @@ test.describe('Reserva de turnos - Masajes', () => {
     await home.goToBooking();
 
     await booking.selectFirstAvailableDay();
-    await booking.reserveLink.click();
-    await booking.expectValidationMessage('Elegí el horario.');
+    await booking.submit();
+
+    await booking.expectValidationMessage('Elegí un horario.');
   });
 
   test('valida que el nombre sea obligatorio', async ({ page }) => {
@@ -34,9 +124,49 @@ test.describe('Reserva de turnos - Masajes', () => {
 
     await booking.selectFirstAvailableDay();
     await booking.selectFirstAvailableTime();
+    await booking.phoneInput.fill('1123456789');
 
-    await booking.reserveLink.click();
-    await booking.expectValidationMessage('Ingresá tu nombre para armar el mensaje.');
+    await booking.submit();
+
+    await booking.expectValidationMessage('Ingresá tu nombre.');
+  });
+
+  test('valida que el teléfono sea obligatorio', async ({ page }) => {
+    const home = new HomePage(page);
+    const booking = new BookingPage(page);
+
+    await home.open();
+    await home.goToBooking();
+
+    await booking.selectFirstAvailableDay();
+    await booking.selectFirstAvailableTime();
+    await booking.nameInput.fill('Ezequiel');
+
+    await booking.submit();
+
+    await booking.expectValidationMessage(
+      'Ingresá un teléfono válido.',
+    );
+  });
+
+  test('valida que el teléfono tenga al menos ocho dígitos', async ({
+    page,
+  }) => {
+    const home = new HomePage(page);
+    const booking = new BookingPage(page);
+
+    await home.open();
+    await home.goToBooking();
+
+    await booking.selectFirstAvailableDay();
+    await booking.selectFirstAvailableTime();
+
+    await booking.fillPersonalData('Ezequiel', '1234567');
+    await booking.submit();
+
+    await booking.expectValidationMessage(
+      'Ingresá un teléfono válido.',
+    );
   });
 
   test('completa la reserva y abre WhatsApp con el mensaje correcto', async ({
@@ -48,46 +178,75 @@ test.describe('Reserva de turnos - Masajes', () => {
     await home.open();
     await home.goToBooking();
 
-    // 1. Seleccionar un día disponible.
     await booking.selectFirstAvailableDay();
-
-    // 2. Seleccionar un horario disponible.
     await booking.selectFirstAvailableTime();
 
-    // 3. Completar los datos.
-    await booking.fillPersonalData('Ezequiel Prueba','Molestia en la zona lumbar. Prueba automatizada.');
+    await booking.fillPersonalData(
+      'Ezequiel Prueba',
+      '1123456789',
+      'Molestia en la zona lumbar. Prueba automatizada.',
+    );
 
-    // 4. Comprobar que el día y el horario quedaron seleccionados.
     await booking.expectSelectedDayAndTime();
-
-    // 5. Verificar el resumen.
     await booking.expectSummary();
 
-    // 6. Comprobar el enlace y el contenido del mensaje.
-    const href = await booking.getWhatsAppUrl();
-    const whatsappUrl = new URL(href);
-    const message = whatsappUrl.searchParams.get('text');
-
-    expect(whatsappUrl.hostname).toBe('wa.me');
-    expect(whatsappUrl.pathname).toBe('/5491167597638');
-
-    expect(message).toContain('Hola! Quiero reservar un turno:',);
-    expect(message).toContain('Servicio: Sesión de masajes');
-    expect(message).toContain('Duración: 60 minutos');
-    expect(message).toContain('Precio: $25.000');
-    expect(message).toContain('Nombre: Ezequiel Prueba');
-    expect(message).toContain('Comentarios: Molestia en la zona lumbar. Prueba automatizada.');
-
-    // 7. Hacer clic y comprobar que se abre WhatsApp.
     const popupPromise = page.waitForEvent('popup');
 
-    await booking.reserveLink.click();
+    await booking.submit();
 
     const popup = await popupPromise;
 
+    // Esperar a que la aplicación asigne la URL de WhatsApp.
     await expect
       .poll(() => popup.url())
-      .toMatch(/wa\.me|whatsapp\.com/);
+      .toMatch(/^https:\/\/(api\.whatsapp\.com|wa\.me)\//);
+
+    const whatsappUrl = new URL(popup.url());
+    const message = whatsappUrl.searchParams.get('text');
+
+    // Validar el dominio de WhatsApp.
+    expect([
+      'api.whatsapp.com',
+      'wa.me',
+    ]).toContain(whatsappUrl.hostname);
+
+    // Validar el destinatario según el formato de URL.
+    const recipient =
+      whatsappUrl.hostname === 'wa.me'
+        ? whatsappUrl.pathname.replace(/\//g, '')
+        : whatsappUrl.searchParams.get('phone');
+
+    expect(recipient).toMatch(/^\d+$/);
+
+    // Validar el mensaje enviado.
+    expect(message).not.toBeNull();
+
+    expect(message).toContain(
+      'Hola! Quiero reservar un turno de masajes.',
+    );
+
+    expect(message).toContain('Precio: $25.000');
+    expect(message).toContain('Nombre: Ezequiel Prueba');
+    expect(message).toContain('Teléfono: 1123456789');
+
+    expect(message).toContain(
+      'Comentarios: Molestia en la zona lumbar. Prueba automatizada.',
+    );
+
+    // Verificar que se haya enviado la reserva al servicio.
+    expect(createdBooking).not.toBeNull();
+
+    expect(createdBooking).toMatchObject({
+      customer_name: 'Ezequiel Prueba',
+      customer_phone: '1123456789',
+      service_id: null,
+      status: 'pending',
+      notes: 'Molestia en la zona lumbar. Prueba automatizada.',
+    });
+
+    expect(createdBooking?.booking_date).toBeTruthy();
+    expect(createdBooking?.start_time).toBe('23:00');
+    expect(createdBooking?.end_time).toBe('00:00');
 
     await popup.close();
   });

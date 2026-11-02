@@ -1,0 +1,77 @@
+<footer class="mt-5 pt-5">
+  <div class="container">
+    <div class="row g-4 g-lg-5 pb-4">
+      <div class="col-12 col-sm-6 col-lg-4">
+        <div class="about">
+          <a class="logo d-inline-flex" href="#inicio" aria-label="Volver al inicio">
+            <img src="/A-monograma-claro-.svg" alt="Logo" height="44">
+          </a>
+
+          <p class="mb-0">
+            Masajes y recuperación muscular en Lanús Oeste.
+            Atención con turno previo.
+          </p>
+
+          <a
+            class="btn btn-brand cta align-self-start"
+            [href]="whatsappHref"
+            target="_blank"
+            rel="noopener"
+          >
+            Reservar por WhatsApp
+          </a>
+        </div>
+      </div>
+
+      <nav class="col-6 col-lg-2" aria-label="Secundaria">
+        <h4 class="footer-title">Navegación</h4>
+
+        <ul class="list-unstyled d-grid gap-2 mb-0">
+          @for (l of links; track l.href) {
+            <li>
+              <a class="footer-link" [href]="l.href">{{ l.label }}</a>
+            </li>
+          }
+        </ul>
+      </nav>
+
+      <div class="col-6 col-lg-3">
+        <h4 class="footer-title">Horarios</h4>
+
+        <ul class="list-unstyled d-grid gap-2 mb-0">
+          <li>Horarios personalizados</li>
+          <li>Consultá la disponibilidad en el calendario</li>
+          <li>Solo con turno previo</li>
+        </ul>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <h4 class="footer-title">Contacto</h4>
+
+        <ul class="list-unstyled d-grid gap-2 mb-0">
+          @for (c of contacts; track c.name) {
+            <li>
+              <a
+                class="footer-link contact-link"
+                [href]="c.href"
+                target="_blank"
+                rel="noopener"
+              >
+                <i [class]="'bi bi-' + c.icon" aria-hidden="true"></i>
+                <span>{{ c.value }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="bottom d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+      <span>© {{ year }} · Lanús Oeste</span>
+
+      <a href="#inicio" class="footer-link" aria-label="Volver arriba">
+        Volver arriba ↑
+      </a>
+    </div>
+  </div>
+</footer>

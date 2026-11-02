@@ -1,0 +1,209 @@
+:host {
+  display: block;
+}
+
+.booking-layout {
+  margin-top: 32px;
+}
+
+/* Tarjetas */
+.booking-form,
+.summary {
+  --bs-card-bg: var(--card);
+  --bs-card-color: var(--ink);
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--sh);
+}
+
+/* Textos */
+.booking-form,
+.summary,
+.booking-form label,
+.summary h3 {
+  color: var(--ink);
+}
+
+.sl {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Campos Bootstrap */
+.booking-form .form-control {
+  --bs-body-color: var(--ink);
+  --bs-body-bg: var(--bg);
+  --bs-border-color: var(--line);
+  --bs-secondary-color: var(--mut);
+  color: var(--ink);
+  background-color: var(--bg);
+  border-color: var(--line);
+  min-height: 48px;
+}
+
+.booking-form .form-control::placeholder {
+  color: var(--mut);
+  opacity: 1;
+}
+
+.booking-form .form-control:focus {
+  color: var(--ink);
+  background-color: var(--bg);
+  border-color: var(--brand);
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--brand) 20%, transparent);
+}
+
+.booking-form textarea.form-control {
+  min-height: 96px;
+  resize: vertical;
+}
+
+/* Días y horarios */
+.step {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px;
+}
+
+.times {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+}
+
+.opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 6px 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+.opt small {
+  color: var(--mut);
+  font-size: 0.74rem;
+}
+
+.opt b {
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.opt:hover {
+  border-color: var(--brand);
+}
+
+.opt[aria-pressed="true"] {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.opt[aria-pressed="true"] small {
+  color: var(--on-brand);
+}
+
+.hint {
+  color: var(--mut);
+  font-size: 0.9rem;
+}
+
+/* Resumen */
+.summary {
+  position: sticky;
+  top: calc(84px + env(safe-area-inset-top, 0px));
+}
+
+.summary .card-body {
+  padding: 22px;
+}
+
+.summary h3 {
+  font-size: 1.15rem;
+}
+
+.sum {
+  display: grid;
+  gap: 8px;
+}
+
+.sum > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--line);
+  font-size: 0.93rem;
+}
+
+.sum dt {
+  color: var(--mut);
+}
+
+.sum dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 600;
+  text-align: right;
+}
+
+.sum .tot dd {
+  color: var(--brand-ink);
+  font-size: 1.2rem;
+}
+
+.fine {
+  color: var(--mut);
+  font-size: 0.82rem;
+}
+
+/* Contactos */
+.chans {
+  display: grid;
+  gap: 0;
+  align-content: start;
+  margin-top: 4px;
+}
+
+.chan {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.chan .bi {
+  flex: none;
+  font-size: 28px;
+  color: var(--brand);
+}
+
+.chan b {
+  display: block;
+}
+
+.chan small {
+  color: var(--mut);
+}
+
+@media (max-width: 991.98px) {
+  .summary {
+    position: static;
+  }
+}

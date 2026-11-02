@@ -1,143 +1,289 @@
 
-import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
-import { DayOption, MissingField } from './models';
-import { SITE } from './site.config';
-import { availableDays, dateKey, longDate, monthShort, slotsFor, weekdayShort} from './date-utils';
+import { computed, inject, Injectable, signal } from '@angular/core';
 
-const DURATION_MINUTES = 60;
-const PRICE = 25000;
+import { BookingService } from './services/booking.service';
+import { ScheduleService } from './services/schedule.service';
 
-const money = (value: number): string =>
-  '$' + value.toLocaleString('es-AR');
+import {
+  DayOption,
+  MissingField,
+  ScheduleExceptionRecord,
+  WeeklyScheduleRecord,
+} from './models';
 
-const ERRORS: Record<MissingField, string> = {
-  date: 'Elegí el día del turno.',
-  time: 'Elegí el horario.',
-  name: 'Ingresá tu nombre para armar el mensaje.',
-};
+import { CONTACTS } from './site.config';
+
+const HORIZON_DAYS = 21;
+const LEAD_MINUTES = 120;
+
+// Configuración temporal del turno general.
+const BOOKING_PRICE = 25000;
+const BOOKING_DURATION_MINUTES = 60;
+
+const pad = (n: number): string => String(n).padStart(2, '0');
+
+function toISO(d: Date): string {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function fromISO(key: string): Date {
+  return new Date(`${key}T00:00:00`);
+}
+
+function addMinutes(time: string, minutes: number): string {
+  const total =
+    Number(time.slice(0, 2)) * 60 +
+    Number(time.slice(3, 5)) +
+    minutes;
+
+  return `${pad(Math.floor(total / 60) % 24)}:${pad(total % 60)}`;
+}
 
 @Injectable({ providedIn: 'root' })
 export class BookingStore {
+  private readonly bookings = inject(BookingService);
+  private readonly schedule = inject(ScheduleService);
+
   readonly name = signal('');
+  readonly phone = signal('');
   readonly comments = signal('');
+  readonly error = signal('');
+  readonly loading = signal(true);
 
-  private readonly dateKeySig = signal<string | null>(null);
-  private readonly timeSig = signal<string | null>(null);
-  private readonly attempted = signal(false);
-  private readonly now = signal(new Date());
+  readonly selectedDate = signal<string | null>(null);
+  readonly selectedTime = signal<string | null>(null);
 
-  readonly days = computed(() =>
-    availableDays(this.now(), DURATION_MINUTES, SITE.schedule),
-  );
+  private readonly weekly = signal<WeeklyScheduleRecord[]>([]);
+  private readonly exceptions = signal<ScheduleExceptionRecord[]>([]);
+  private readonly taken = signal<string[]>([]);
+  private readonly availabilityFailed = signal(false);
 
-  readonly selectedDate = computed(
-    () =>
-      this.days().find((day) => dateKey(day) === this.dateKeySig()) ?? null,
+  readonly priceText = computed(
+    () => '$' + BOOKING_PRICE.toLocaleString('es-AR'),
   );
 
   readonly dayOptions = computed<DayOption[]>(() => {
     const selected = this.selectedDate();
+    const base = new Date();
+    base.setHours(0, 0, 0, 0);
 
-    return this.days().map((day) => ({
-      key: dateKey(day),
-      weekday: weekdayShort(day),
-      day: day.getDate(),
-      month: monthShort(day),
-      selected:
-        selected !== null && dateKey(day) === dateKey(selected),
-    }));
+    const options: DayOption[] = [];
+
+    for (let i = 0; i <= HORIZON_DAYS; i++) {
+      const d = new Date(base);
+      d.setDate(base.getDate() + i);
+
+      const key = toISO(d);
+
+      if (this.slotsFor(key).length === 0) continue;
+
+      options.push({
+        key,
+        weekday: d.toLocaleDateString('es-AR', {
+          weekday: 'short',
+        }).replace('.', ''),
+        day: d.getDate(),
+        month: d.toLocaleDateString('es-AR', {
+          month: 'short',
+        }).replace('.', ''),
+        selected: key === selected,
+      });
+    }
+
+    return options;
   });
 
-  readonly slots = computed(() => {
-    const day = this.selectedDate();
+  readonly slots = computed<string[]>(() => {
+    const date = this.selectedDate();
 
-    return day
-      ? slotsFor(day, this.now(), DURATION_MINUTES, SITE.schedule)
-      : [];
-  });
+    if (!date || this.availabilityFailed()) return [];
 
-  readonly selectedTime = computed(() => {
-    const time = this.timeSig();
+    const taken = this.taken();
 
-    return time !== null && this.slots().includes(time) ? time : null;
+    return this.slotsFor(date).filter((time) => !taken.includes(time));
   });
 
   readonly selectedDateText = computed(() => {
-    const day = this.selectedDate();
-    return day ? longDate(day) : '';
+    const key = this.selectedDate();
+
+    if (!key) return '';
+
+    const text = fromISO(key).toLocaleDateString('es-AR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+
+    return text.charAt(0).toUpperCase() + text.slice(1);
   });
-
-  readonly durationText = computed(() => `${DURATION_MINUTES} minutos`);
-
-  readonly price = PRICE;
-
-  readonly priceText = computed(() => money(PRICE));
-
-  readonly missing = computed<MissingField | null>(() => {
-    if (!this.selectedDate()) return 'date';
-    if (!this.selectedTime()) return 'time';
-    if (!this.name().trim()) return 'name';
-
-    return null;
-  });
-
-  readonly error = computed(() => {
-    const missing = this.missing();
-    return this.attempted() && missing !== null ? ERRORS[missing] : '';
-  });
-
-  readonly message = computed(() => {
-    const day = this.selectedDate();
-    const time = this.selectedTime();
-    const comments = this.comments().trim();
-
-    const lines = [
-      'Hola! Quiero reservar un turno:',
-      `• Servicio: Sesión de masajes`,
-      `• Duración: ${DURATION_MINUTES} minutos`,
-      `• Día: ${day ? longDate(day) : 'a coordinar'}`,
-      `• Horario: ${time ? `${time} hs` : 'a coordinar'}`,
-      `• Precio: ${money(PRICE)}`,
-      `• Nombre: ${this.name().trim() || '—'}`,
-    ];
-
-    if (comments) {
-      lines.push(`• Comentarios: ${comments}`);
-    }
-
-    lines.push('¿Me confirmás el turno?');
-
-    return lines.join('\n');
-  });
-
-  readonly whatsappUrl = computed(
-    () =>
-      `https://wa.me/${SITE.whatsapp.number}?text=${encodeURIComponent(this.message())}`,
-  );
 
   constructor() {
-    const intervalId = setInterval(() => {
-      this.now.set(new Date());
-    }, 60_000);
-
-    inject(DestroyRef).onDestroy(() => clearInterval(intervalId));
+    void this.init();
   }
 
-  pickDay(key: string): void {
-    if (key === this.dateKeySig()) return;
+  private async init(): Promise<void> {
+    try {
+      const [weekly, exceptions] = await Promise.all([
+        this.schedule.getWeekly(),
+        this.schedule.getExceptions(),
+      ]);
 
-    this.dateKeySig.set(key);
-    this.timeSig.set(null);
+      this.weekly.set(weekly);
+      this.exceptions.set(exceptions);
+    } catch (error) {
+      this.error.set(
+        error instanceof Error
+          ? error.message
+          : 'No se pudieron cargar los datos para reservar.',
+      );
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  private slotsFor(key: string): string[] {
+    const exception = this.exceptions().find(
+      (e) => e.exception_date === key,
+    );
+
+    let slots: string[];
+
+    if (exception) {
+      slots = exception.closed ? [] : exception.slots;
+    } else {
+      const day = this.weekly().find(
+        (w) => w.weekday === fromISO(key).getDay(),
+      );
+
+      slots = day?.enabled ? day.slots : [];
+    }
+
+    const limit = Date.now() + LEAD_MINUTES * 60_000;
+
+    return [...slots]
+      .sort()
+      .filter(
+        (time) =>
+          new Date(`${key}T${time}:00`).getTime() > limit,
+      );
+  }
+
+  async pickDay(key: string): Promise<void> {
+    this.selectedDate.set(key);
+    this.selectedTime.set(null);
+    this.taken.set([]);
+    this.availabilityFailed.set(false);
+    this.error.set('');
+
+    try {
+      const taken = await this.bookings.takenSlots(key);
+
+      if (this.selectedDate() === key) {
+        this.taken.set(taken);
+      }
+    } catch {
+      if (this.selectedDate() === key) {
+        this.availabilityFailed.set(true);
+        this.error.set(
+          'No se pudo consultar la disponibilidad. Probá nuevamente.',
+        );
+      }
+    }
   }
 
   pickTime(time: string): void {
-    this.timeSig.set(time);
+    this.selectedTime.set(time);
+    this.error.set('');
   }
 
   validate(): MissingField | null {
-    const missing = this.missing();
-    this.attempted.set(missing !== null);
+    let missing: MissingField | null = null;
+    let message = '';
+
+    if (!this.selectedDate()) {
+      missing = 'date';
+      message = 'Elegí un día.';
+    } else if (!this.selectedTime()) {
+      missing = 'time';
+      message = 'Elegí un horario.';
+    } else if (this.availabilityFailed()) {
+      message =
+        'No se pudo verificar la disponibilidad. Elegí nuevamente el día.';
+    } else if (this.name().trim().length < 2) {
+      missing = 'name';
+      message = 'Ingresá tu nombre.';
+    } else if (this.phone().replace(/\D/g, '').length < 8) {
+      missing = 'phone';
+      message = 'Ingresá un teléfono válido.';
+    }
+
+    this.error.set(message);
 
     return missing;
+  }
+
+  async submit(): Promise<void> {
+    const date = this.selectedDate();
+    const time = this.selectedTime();
+
+    if (!date || !time) {
+      throw new Error('Faltan datos para realizar la reserva.');
+    }
+
+    if (this.availabilityFailed()) {
+      throw new Error('No se pudo verificar la disponibilidad.');
+    }
+
+    await this.bookings.create({
+      customer_name: this.name().trim(),
+      customer_phone: this.phone().trim(),
+      service_id: null,
+      booking_date: date,
+      start_time: time,
+      end_time: addMinutes(time, BOOKING_DURATION_MINUTES),
+      notes: this.comments().trim(),
+    });
+
+    this.taken.update((times) => [...times, time]);
+  }
+
+  reset(): void {
+    this.name.set('');
+    this.phone.set('');
+    this.comments.set('');
+    this.error.set('');
+    this.selectedTime.set(null);
+  }
+
+  whatsappUrl(): string {
+    const lines = [
+      'Hola! Quiero reservar un turno de masajes.',
+      `Día: ${this.selectedDateText() || '—'}`,
+      `Horario: ${this.selectedTime() ? this.selectedTime() + ' hs' : '—'}`,
+      `Precio: ${this.priceText()}`,
+      `Nombre: ${this.name().trim() || '—'}`,
+      `Teléfono: ${this.phone().trim() || '—'}`,
+    ];
+
+    const comments = this.comments().trim();
+
+    if (comments) {
+      lines.push(`Comentarios: ${comments}`);
+    }
+
+    return `https://wa.me/${this.whatsappNumber()}?text=${encodeURIComponent(lines.join('\n'))}`;
+  }
+
+  private whatsappNumber(): string {
+    const contact = CONTACTS.find(
+      (item) => item.icon === 'whatsapp',
+    );
+
+    const href = contact?.href ?? '';
+    const match = href.match(/wa\.me\/(\d+)/);
+
+    return match
+      ? match[1]
+      : (contact?.value ?? '').replace(/\D/g, '');
   }
 }

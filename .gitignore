@@ -1,9 +1,24 @@
+# Documentación local
+documentacion-panel-admin-supabase.md
+
+# Dependencias y archivos generados
 node_modules/
 dist/
 .angular/
 out-tsc/
 *.log
 .DS_Store
+
+# Base de datos local
+database/
+
+# Variables de entorno privadas
+.env
+.env.*
+!.env.example
+
+# Archivos de entorno locales de Angular
+src/environments/*.local.ts
 
 # Playwright
 /test-results/

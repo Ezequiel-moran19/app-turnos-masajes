@@ -1,3 +1,4 @@
+http://localhost:4200/admin/
 # Masajes y recuperación muscular · Lanús Oeste
 
 Sitio de una sola página hecho con **Angular 22**, TypeScript, HTML y CSS (sin librerías de UI).

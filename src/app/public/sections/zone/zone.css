@@ -1,0 +1,52 @@
+:host {
+  display: block;
+}
+
+.map {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 300px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: #eef1ea;
+  box-shadow: var(--sh);
+}
+
+.fb {
+  position: absolute;
+  inset: 0;
+}
+
+.map-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.map-overlay {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.leaf {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+}
+
+.map.live .leaf {
+  visibility: visible;
+}
+
+.map.live .fb {
+  display: none;
+}

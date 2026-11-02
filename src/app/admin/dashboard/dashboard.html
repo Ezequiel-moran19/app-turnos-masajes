@@ -1,0 +1,70 @@
+
+<div class="dashboard-page container-fluid py-4">
+
+  <header class="mb-4">
+    <p class="eyebrow mb-2">Administración</p>
+    <h1 class="page-title">Resumen</h1>
+    <p class="text-muted mb-0">
+      Estado general de los turnos registrados.
+    </p>
+  </header>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner-border spinner-border-sm me-2" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      Cargando resumen...
+    </div>
+  }
+
+  @if (error()) {
+    <div class="alert alert-danger" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  <div class="row g-3 stats">
+
+    <div class="col-12 col-sm-6 col-xl-4">
+      <article class="stat-card h-100">
+        <div class="stat-header">
+          <span class="stat-label">Turnos registrados</span>
+          <span class="stat-icon total-icon" aria-hidden="true">
+            <i class="bi bi-calendar-check"></i>
+          </span>
+        </div>
+        <strong class="stat-value">{{ counts().total }}</strong>
+        <span class="stat-description">Total de reservas registradas</span>
+      </article>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-4">
+      <article class="stat-card h-100">
+        <div class="stat-header">
+          <span class="stat-label">Pendientes</span>
+          <span class="stat-icon pending-icon" aria-hidden="true">
+            <i class="bi bi-clock-history"></i>
+          </span>
+        </div>
+        <strong class="stat-value">{{ counts().pending }}</strong>
+        <span class="stat-description">Reservas por confirmar</span>
+      </article>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-4">
+      <article class="stat-card h-100">
+        <div class="stat-header">
+          <span class="stat-label">Confirmados</span>
+          <span class="stat-icon confirmed-icon" aria-hidden="true">
+            <i class="bi bi-check-circle"></i>
+          </span>
+        </div>
+        <strong class="stat-value">{{ counts().confirmed }}</strong>
+        <span class="stat-description">Reservas confirmadas</span>
+      </article>
+    </div>
+
+  </div>
+
+</div>
