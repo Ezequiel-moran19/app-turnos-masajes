@@ -1,60 +1,41 @@
-http://localhost:4200/admin/
 # Masajes y recuperación muscular · Lanús Oeste
 
-Sitio de una sola página hecho con **Angular 22**, TypeScript, HTML y CSS (sin librerías de UI).
-Incluye sesiones con precio, mapa con radio de atención (sin marcar la dirección) y reserva de turno por WhatsApp.
+Aplicación web orientada a la gestión de servicios de masajes y recuperación muscular, diseñada para ofrecer a los clientes una forma sencilla de conocer los tratamientos disponibles y solicitar turnos online.
 
-## Requisitos
+## Sobre el proyecto
 
-- Node.js 22.12 o superior
-- npm
+El proyecto busca digitalizar la experiencia de atención al cliente, centralizando la información de los servicios, horarios, zona de atención y solicitudes de turnos en una única plataforma.
 
-## Uso
+La interfaz está diseñada para ser intuitiva, accesible y adaptable a distintos dispositivos.
 
-```bash
-npm install
-npm start        # desarrollo en http://localhost:4200
-npm run build    # producción, sale en dist/masajes-lanus-oeste/browser
-```
+## Servicios
 
-La carpeta `dist/.../browser` se sube tal cual a cualquier hosting estático.
-Si el sitio no queda en la raíz del dominio, compilar con `npx ng build --base-href /ruta/`.
+- Masajes descontracturantes.
+- Masajes deportivos.
+- Recuperación muscular y lesiones.
 
-## Qué editar
+## Funcionalidades para clientes
 
-Todo está en `src/app/core/site.config.ts`:
+- Consulta de servicios y tratamientos disponibles.
+- Visualización de precios y duración de las sesiones.
+- Consulta de horarios de atención.
+- Selección de día y horario para solicitar un turno.
+- Envío de solicitudes mediante WhatsApp.
+- Consulta de la zona de atención mediante un mapa con ubicación aproximada.
 
-| Qué | Dónde |
-| --- | --- |
-| Número de WhatsApp | `SITE.whatsapp` |
-| Días, horario de atención, duración del turno | `SITE.schedule` |
-| Sesiones, duración y **precios** | `SERVICES` |
-| Aviso "Precios de ejemplo" | `SITE.pricesAreExample` (poner `false` con precios reales) |
-| Formación, contactos (Instagram) | `TRAINING`, `CONTACTS` |
-| Centro, radio y etiqueta del mapa | `SITE.zone` |
+## Tecnologías utilizadas
 
-Los precios cargados son de ejemplo y hay que reemplazarlos.
+- Angular 22
+- TypeScript
+- Bootstrap 5
+- Bootstrap Icons
+- Supabase
+- Leaflet
 
-## Mapa y privacidad
+## Calidad y pruebas
 
-- El mapa dibuja solo un círculo; no hay marcador.
-- El centro del círculo está **desplazado a propósito** de la dirección real. Verificá que tu domicilio quede dentro del radio y no en el centro; si no, ajustá `center` y `radiusMeters`.
-- No escribas la dirección real en ningún archivo del proyecto: el código es público.
-- Los mosaicos vienen de OpenStreetMap. Funcionan en un sitio publicado (http/https); abriendo los archivos desde el disco el servidor de mapas puede bloquearlos. Sin conexión se muestra un mapa esquemático.
+El proyecto incorpora pruebas automatizadas E2E con Playwright para validar los principales flujos de navegación y solicitud de turnos, junto con un proceso de integración continua mediante GitHub Actions.
 
-## Cómo funciona la reserva
+## Objetivo
 
-1. La persona elige sesión, día y horario, y escribe su nombre.
-2. Los horarios dependen de la duración de la sesión y del horario de atención.
-3. El botón abre WhatsApp con el mensaje armado (sesión, día, horario, precio, nombre y comentarios).
-
-No hay backend ni agenda: la página no sabe qué horarios ya están ocupados. El turno queda confirmado cuando respondés por WhatsApp.
-
-## Estructura
-
-```
-src/app/
-  core/       configuración, modelos, fechas y estado de la reserva (signals)
-  shared/     íconos, directiva de aparición, pipe de precios
-  sections/   header, hero, servicios, horarios, formación, zona, reserva, footer
-```
+Construir una plataforma web que simplifique la comunicación con los clientes, facilite la solicitud de turnos y permita gestionar los servicios de manera organizada, manteniendo una experiencia de uso simple y clara.
