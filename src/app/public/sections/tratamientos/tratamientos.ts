@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import { TreatmentsService } from '../../../core/services/treatments.service';
-import { Reveal } from '../../../shared/reveal';
 
 interface PublicTreatment {
   name: string;
@@ -11,7 +10,7 @@ interface PublicTreatment {
 
 @Component({
   selector: 'app-tratamientos',
-  imports: [Reveal],
+  imports: [],
   templateUrl: './tratamientos.html',
   styleUrl: './tratamientos.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,19 +1,12 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, signal } from '@angular/core';
 
 import { BookingStore } from '../../../core/booking.store';
 import { MissingField } from '../../../core/models';
 import { CONTACTS } from '../../../core/site.config';
-import { Reveal } from '../../../shared/reveal';
 
 @Component({
   selector: 'app-booking',
-  imports: [Reveal],
+  imports: [],
   templateUrl: './booking.html',
   styleUrl: './booking.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,8 +16,7 @@ export class BookingSection {
   protected readonly contacts = CONTACTS;
   protected readonly sending = signal(false);
 
-  private readonly host =
-    inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
   protected textOf(event: Event): string {
     return (event.target as HTMLInputElement | HTMLTextAreaElement).value;
@@ -65,11 +57,7 @@ export class BookingSection {
     } catch (error) {
       win?.close();
 
-      this.store.error.set(
-        error instanceof Error
-          ? error.message
-          : 'No se pudo reservar. Probá de nuevo.',
-      );
+      this.store.error.set(error instanceof Error ? error.message : 'No se pudo reservar. Probá de nuevo.');
     } finally {
       this.sending.set(false);
     }

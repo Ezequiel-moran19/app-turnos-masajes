@@ -2,6 +2,29 @@
   display: block;
 }
 
+.zone-title {
+  width: fit-content;
+  max-width: 100%;
+  color: #ffffff;
+  background: linear-gradient(90deg, #ffffff 0%, #0eb0a4 35%, #ffffff 65%, #0eb0a4 100%);
+  background-size: 300% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 5s ease-in-out infinite alternate;
+}
+
+@keyframes gradientMove {
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 100% 50%;
+  }
+}
+
 .map {
   position: relative;
   width: 100%;
@@ -49,4 +72,10 @@
 
 .map.live .fb {
   display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zone-title {
+    animation: none;
+  }
 }

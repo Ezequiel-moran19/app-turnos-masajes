@@ -1,29 +1,28 @@
 <section id="zona" class="py-5">
   <div class="container">
     <div class="row align-items-center g-4 g-lg-5">
+
       <div class="col-12 col-lg-5">
-        <p class="eyebrow mb-2" appReveal>Zona de atención</p>
-
-        <h2 appReveal> Atención en Lanús Oeste y alrededores </h2>
-
+        <p class="eyebrow mb-2" appReveal> Zona de atención</p>
+        <h2 class="zone-title" appReveal>Atención en Lanús Oeste y alrededores</h2>
         <p class="lead mt-3 mb-0" appReveal>
-          La ubicación exacta se comparte de forma privada al coordinar tu turno.
-          El círculo marca el radio de atención.
+          La ubicación exacta se comparte de forma privada al coordinar tu turno. El círculo marca el radio de atención.
         </p>
       </div>
 
       <div class="col-12 col-lg-7">
         <div class="map" [class.live]="live()" appReveal role="region" aria-label="Mapa con el radio de atención en Lanús Oeste">
           <div class="fb">
-            <img class="map-image" src="mapa.png" alt="Mapa de referencia de la zona de atención en Lanús Oeste" />
-            <svg class="map-overlay" viewBox="0 0 400 300" preserveAspectRatio="none" aria-hidden="true" >
+            <img class="map-image" src="mapa.png" alt="Mapa de referencia de la zona de atención en Lanús Oeste"/>
+            <svg class="map-overlay" viewBox="0 0 400 300" preserveAspectRatio="none" aria-hidden="true">
               <circle cx="200" cy="145" r="92" fill="#0EB0A4" fill-opacity=".22" stroke="#0EB0A4" stroke-width="3" stroke-dasharray="6 6"/>
             </svg>
           </div>
-
           <div class="leaf" #leaf></div>
         </div>
+        <p class="text-secondary small mt-2 mb-0"> <i class="bi bi-geo-alt me-1" aria-hidden="true"></i> Radio de atención aproximado. </p>
       </div>
+
     </div>
   </div>
 </section>
