@@ -9,6 +9,12 @@
   --on-brand: #052f2b;
   --soft: #e3f5f3;
   --sh: 0 6px 24px rgba(20, 40, 38, .08);
+  --bs-body-color: var(--ink);
+  --bs-body-bg: var(--bg);
+  --bs-emphasis-color: var(--ink);
+  --bs-secondary-color: var(--mut);
+  --bs-tertiary-color: var(--mut);
+  --bs-border-color: var(--line);
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);

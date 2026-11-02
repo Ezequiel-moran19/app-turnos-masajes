@@ -3,7 +3,6 @@ import { HomePage } from '../pages/HomePage';
 import { BookingPage } from '../pages/BookingPage';
 
 test.describe('Navegación de la landing - Masajes', () => {
-
   test.beforeEach(async ({ page }) => {
     const home = new HomePage(page);
     await home.open();
@@ -20,24 +19,25 @@ test.describe('Navegación de la landing - Masajes', () => {
   test('permite navegar hasta la sección de turnos', async ({ page }) => {
     const booking = new BookingPage(page);
 
-    const reserveButton = page.getByRole('link', {
-      name: 'Reservar turno',
-      exact: true,
-    }).first();
+    const reserveButton = page.locator(
+      'nav[aria-label="Principal"] a.nav-cta[href="#contacto"]',
+    );
 
     await expect(reserveButton).toBeVisible();
     await reserveButton.click();
 
     await expect(booking.section).toBeInViewport();
-    await expect(booking.reserveLink).toBeVisible();
+    await expect(booking.reserveButton).toBeVisible();
   });
 
-  test('el menú permite acceder a las secciones principales', async ({ page }) => {
-    const navigation = page.locator('nav');
+  test('el menú permite acceder a las secciones principales', async ({
+    page,
+  }) => {
+    const navigation = page.locator('nav[aria-label="Principal"]');
+    const links = navigation.locator('#menu a[href^="#"]');
 
     await expect(navigation).toBeVisible();
 
-    const links = navigation.locator('a[href^="#"]:not(.logo)');
     const linkCount = await links.count();
 
     expect(linkCount).toBeGreaterThan(0);
@@ -62,32 +62,27 @@ test.describe('Navegación de la landing - Masajes', () => {
   });
 
   test('permite regresar al inicio desde el menú', async ({ page }) => {
-    const navigation = page.locator('nav');
+    const navigation = page.locator('nav[aria-label="Principal"]');
 
-    const homeLink = navigation.getByRole('link', {
-      name: 'Inicio',
-      exact: true,
-    });
+    const homeLink = navigation.locator('.navbar-brand.logo');
 
-    // Comprobamos que el enlace Inicio sea único.
-    await expect(homeLink).toHaveCount(1);
+    // Seleccionar únicamente el enlace del menú, no el botón CTA.
+    const bookingLink = navigation.locator(
+      '#menu a.nav-link[href="#contacto"]',
+    );
+
+    const homeSection = page.locator('#inicio');
+    const bookingSection = page.locator('#contacto');
+
     await expect(homeLink).toBeVisible();
-
-    // Seleccionamos exclusivamente el enlace Reservar del menú.
-    const bookingLink = navigation.locator('#menu a[href="#contacto"]');
-
-    await expect(bookingLink).toHaveCount(1);
     await expect(bookingLink).toBeVisible();
 
-    // Navegamos a la sección de turnos.
     await bookingLink.click();
 
-    await expect(page.locator('#contacto')).toBeInViewport();
+    await expect(bookingSection).toBeInViewport();
 
-    // Regresamos al inicio.
     await homeLink.click();
 
-    await expect(page.locator('#inicio')).toBeInViewport();
+    await expect(homeSection).toBeInViewport();
   });
-
 });

@@ -1,0 +1,116 @@
+
+:host {
+  display: block;
+  color: #263238;
+  color-scheme: light;
+}
+
+/* Fondo y tarjetas */
+.container-fluid {
+  color: #263238;
+}
+
+.card {
+  background-color: #ffffff !important;
+  color: #263238 !important;
+}
+
+.card-body {
+  color: #263238;
+}
+
+h1,
+h2,
+strong {
+  color: #0b2f36;
+}
+
+/* Textos secundarios */
+.text-secondary {
+  color: #596966 !important;
+}
+
+.text-success {
+  color: #078f86 !important;
+}
+
+/* Formularios */
+.form-label,
+.form-check-label {
+  color: #344548 !important;
+}
+
+.form-control {
+  background-color: #ffffff !important;
+  color: #263238 !important;
+  border-color: #ccd5d1 !important;
+}
+
+.form-control::placeholder {
+  color: #788582 !important;
+  opacity: 1;
+}
+
+.form-control:disabled {
+  background-color: #edf0ef !important;
+  color: #687575 !important;
+  opacity: 1;
+}
+
+.form-control:focus,
+.form-check-input:focus {
+  border-color: #0eb0a4 !important;
+  box-shadow: 0 0 0 0.2rem rgb(14 176 164 / 15%) !important;
+}
+
+/* Fondos de formularios */
+.bg-light {
+  background-color: #f3f7f5 !important;
+}
+
+/* Botones */
+.btn-primary {
+  --bs-btn-color: #ffffff;
+  --bs-btn-bg: #0b2f36;
+  --bs-btn-border-color: #0b2f36;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: #12434a;
+  --bs-btn-hover-border-color: #12434a;
+  --bs-btn-active-bg: #08262c;
+  --bs-btn-active-border-color: #08262c;
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: #344548;
+  --bs-btn-border-color: #aebbb6;
+  --bs-btn-hover-color: #263238;
+  --bs-btn-hover-bg: #e3ece8;
+  --bs-btn-hover-border-color: #aebbb6;
+}
+
+/* Switches */
+.form-check-input:checked {
+  background-color: #0eb0a4 !important;
+  border-color: #0eb0a4 !important;
+}
+
+/* Separadores */
+.border-top,
+.border-bottom {
+  border-color: #e5ebe8 !important;
+}
+
+/* Alertas */
+.alert {
+  color: inherit;
+}
+
+/* Excepciones */
+.badge {
+  color: #ffffff;
+}
+
+/* Evitar texto oscuro sobre fondos oscuros */
+.spinner-border {
+  color: currentColor;
+}

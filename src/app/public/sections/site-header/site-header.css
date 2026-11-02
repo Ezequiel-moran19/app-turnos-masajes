@@ -1,0 +1,112 @@
+:host {
+  display: contents;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.site-header .navbar {
+  min-height: 64px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+.logo img {
+  display: block;
+  width: auto;
+  height: 40px;
+}
+
+.site-header .nav-link {
+  color: var(--mut);
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 10px 0;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.site-header .nav-link:hover,
+.site-header .nav-link:focus {
+  color: var(--ink);
+}
+
+.menu-toggle {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  color: var(--ink);
+  box-shadow: none;
+  font-size: 1.6rem;
+}
+
+.menu-toggle:focus {
+  box-shadow: none;
+}
+
+.menu-toggle:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.nav-actions {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    padding: 8px 0 16px;
+  }
+
+  .site-header .navbar-nav {
+    gap: 0 !important;
+  }
+
+  .site-header .nav-link {
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav-actions {
+    display: block;
+    margin-top: 16px;
+  }
+
+  .nav-cta {
+    width: 100%;
+  }
+}
+
+@media (min-width: 992px) {
+  .menu-toggle {
+    display: none;
+  }
+
+  .navbar-collapse {
+    display: flex !important;
+  }
+
+  .nav-actions {
+    display: block;
+  }
+
+  .nav-cta {
+    min-height: 40px;
+    padding: 0 18px;
+    font-size: 0.9rem;
+  }
+}

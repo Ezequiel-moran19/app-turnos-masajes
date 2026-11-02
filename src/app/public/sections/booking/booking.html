@@ -1,0 +1,190 @@
+<section id="contacto">
+  <div class="container">
+    <p class="eyebrow mb-2" appReveal>Reserva de turno</p>
+    <h2 appReveal>Reservá tu turno en un minuto</h2>
+
+    <p class="lead mt-3" appReveal>
+      Elegí el día y el horario. El turno queda registrado y se abre WhatsApp
+      con el mensaje listo para enviar. Queda confirmado cuando te respondo.
+    </p>
+
+    <div class="booking-layout row g-4 align-items-start">
+      <!-- Formulario -->
+      <div class="col-12 col-lg-8">
+        <form
+          id="reserva"
+          class="card booking-form d-flex flex-column gap-4 p-4"
+          appReveal
+          novalidate
+          (submit)="onSubmit($event)"
+        >
+          <div class="step" role="group" aria-labelledby="lbl-day">
+            <span class="sl" id="lbl-day">1. Día</span>
+
+            <div class="days">
+              @if (store.loading()) {
+                <p class="hint">Cargando días disponibles...</p>
+              } @else {
+                @for (d of store.dayOptions(); track d.key) {
+                  <button type="button" class="opt" [attr.aria-pressed]="d.selected" (click)="store.pickDay(d.key)">
+                    <small>{{ d.weekday }}</small>
+                    <b>{{ d.day }}</b>
+                    <small>{{ d.month }}</small>
+                  </button>
+                } @empty {
+                  <p class="hint">
+                    No hay días para reservar en las próximas semanas.
+                    Escribime por WhatsApp.
+                  </p>
+                }
+              }
+            </div>
+          </div>
+
+          <div class="step" role="group" aria-labelledby="lbl-time">
+            <span class="sl" id="lbl-time">2. Horario</span>
+
+            <div class="times">
+              @for (t of store.slots(); track t) {
+                <button
+                  type="button"
+                  class="opt"
+                  [attr.aria-pressed]="t === store.selectedTime()"
+                  (click)="store.pickTime(t)"
+                >
+                  <b>{{ t }}</b>
+                </button>
+              }
+            </div>
+
+            @if (!store.selectedDate()) {
+              <p class="hint">Elegí un día para ver los horarios.</p>
+            } @else if (store.slots().length === 0) {
+              <p class="hint">
+                No quedan horarios libres para este día. Probá con otro.
+              </p>
+            }
+          </div>
+
+          <div>
+            <label class="form-label sl" for="fName">3. Nombre</label>
+            <input
+              id="fName"
+              class="form-control"
+              autocomplete="name"
+              placeholder="Tu nombre"
+              [value]="store.name()"
+              (input)="store.name.set(textOf($event))"
+            />
+          </div>
+
+          <div>
+            <label class="form-label sl" for="fPhone">4. Teléfono</label>
+            <input
+              id="fPhone"
+              class="form-control"
+              type="tel"
+              autocomplete="tel"
+              placeholder="11 2345 6789"
+              [value]="store.phone()"
+              (input)="store.phone.set(textOf($event))"
+            />
+          </div>
+
+          <div>
+            <label class="form-label sl" for="fComments">
+              Comentarios (opcional)
+            </label>
+            <textarea
+              id="fComments"
+              class="form-control"
+              rows="3"
+              placeholder="Zona a trabajar, molestias o algo que quieras avisar"
+              [value]="store.comments()"
+              (input)="store.comments.set(textOf($event))"
+            ></textarea>
+          </div>
+        </form>
+      </div>
+
+      <!-- Resumen -->
+      <div class="col-12 col-lg-4">
+        <aside
+          class="card summary"
+          appReveal
+          aria-label="Resumen de tu turno"
+        >
+          <div class="card-body d-flex flex-column gap-3">
+            <h3 class="card-title mb-0">Tu turno</h3>
+
+            <dl class="sum mb-0">
+              <div>
+                <dt>Día</dt>
+                <dd>{{ store.selectedDateText() || '—' }}</dd>
+              </div>
+
+              <div>
+                <dt>Horario</dt>
+                <dd>
+                  {{ store.selectedTime() ? store.selectedTime() + ' hs' : '—' }}
+                </dd>
+              </div>
+
+              <div class="tot">
+                <dt>Precio</dt>
+                <dd>{{ store.priceText() }}</dd>
+              </div>
+            </dl>
+
+            @if (store.error()) {
+              <div class="alert alert-danger mb-0" role="alert">
+                {{ store.error() }}
+              </div>
+            }
+
+            <button
+              type="submit"
+              form="reserva"
+              class="btn btn-brand w-100"
+              [disabled]="sending()"
+            >
+              {{ sending() ? 'Reservando...' : 'Reservar por WhatsApp' }}
+            </button>
+
+            <p class="fine mb-0">
+              Se guarda tu reserva y se abre WhatsApp con el mensaje listo para
+              enviar.
+            </p>
+
+            <div class="chans">
+              @for (c of contacts; track c.name) {
+                @if (c.href) {
+                  <a
+                    class="chan d-flex align-items-center gap-3"
+                    [href]="c.href"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    <i [class]="'bi bi-' + c.icon" aria-hidden="true"></i>
+                    <div>
+                      <b>{{ c.name }}</b>
+                      <small>{{ c.value }}</small>
+                    </div>
+                  </a>
+                } @else {
+                  <div class="chan d-flex align-items-center gap-3">
+                    <i [class]="'bi bi-' + c.icon" aria-hidden="true"></i>
+                    <div>
+                      <b>{{ c.name }}</b>
+                      <small>{{ c.value }}</small>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,52 @@
+
+<div class="admin-shell container-fluid p-0">
+
+  <aside class="sidebar d-flex flex-column">
+
+    <a class="brand" routerLink="/admin/dashboard"> Masajes <span>Admin</span></a>
+
+    <nav class="admin-nav d-grid gap-2" aria-label="Navegación administrativa">
+
+      <a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <i class="bi bi-grid-1x2 me-2" aria-hidden="true"></i>
+        Resumen
+      </a>
+
+      <a class="nav-link" routerLink="/admin/bookings" routerLinkActive="active">
+        <i class="bi bi-calendar-check me-2" aria-hidden="true"></i>
+        Turnos
+      </a>
+
+      <a class="nav-link" routerLink="/admin/schedule" routerLinkActive="active">
+        <i class="bi bi-clock me-2" aria-hidden="true"></i>
+        Horarios
+      </a>
+
+      <a class="nav-link" routerLink="/admin/treatments" routerLinkActive="active">
+        <i class="bi bi-heart-pulse me-2" aria-hidden="true"></i>
+        Tratamientos
+      </a>
+
+    </nav>
+
+    <div class="sidebar-actions mt-auto">
+
+      <button type="button" class="btn logout-btn w-100" (click)="logout()" [disabled]="loggingOut()">
+        <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>
+        {{ loggingOut() ? 'Saliendo...' : 'Cerrar sesión' }}
+      </button>
+
+      <a class="public-link d-block text-center mt-3" href="/">
+        <i class="bi bi-box-arrow-up-right me-2" aria-hidden="true"></i>
+        Ver sitio público
+      </a>
+
+    </div>
+
+  </aside>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+
+</div>

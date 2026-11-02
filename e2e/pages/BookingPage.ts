@@ -1,14 +1,16 @@
-import { expect, Locator, Page} from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 
 export class BookingPage {
   readonly page: Page;
   readonly section: Locator;
+  readonly form: Locator;
 
   readonly dayOptions: Locator;
   readonly timeOptions: Locator;
   readonly nameInput: Locator;
+  readonly phoneInput: Locator;
   readonly commentsInput: Locator;
-  readonly reserveLink: Locator;
+  readonly reserveButton: Locator;
 
   readonly errorMessage: Locator;
   readonly summary: Locator;
@@ -16,12 +18,18 @@ export class BookingPage {
   constructor(page: Page) {
     this.page = page;
     this.section = page.locator('#contacto');
-    this.dayOptions = this.section.locator('.days .opt',);
-    this.timeOptions = this.section.locator('.times .opt',);
-    this.nameInput = this.section.locator('#fName');
-    this.commentsInput = this.section.getByPlaceholder('Zona a trabajar, molestias o algo que quieras avisar',);
+    this.form = this.section.locator('#reserva');
 
-    this.reserveLink = this.section.getByRole('link',{ name: 'Reservar por WhatsApp' });
+    this.dayOptions = this.section.locator('.days .opt');
+    this.timeOptions = this.section.locator('.times .opt');
+
+    this.nameInput = this.section.locator('#fName');
+    this.phoneInput = this.section.locator('#fPhone');
+    this.commentsInput = this.section.locator('#fComments');
+
+    this.reserveButton = this.section.getByRole('button', {
+      name: 'Reservar por WhatsApp',
+    });
 
     this.errorMessage = this.section.getByRole('alert');
     this.summary = this.section.locator('aside.summary');
@@ -29,40 +37,55 @@ export class BookingPage {
 
   async selectFirstAvailableDay(): Promise<void> {
     await expect(this.dayOptions.first()).toBeVisible();
+
     await this.dayOptions.first().click();
-    await expect(this.dayOptions.first()).toHaveAttribute('aria-pressed', 'true');
+
+    await expect(this.dayOptions.first()).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
   }
 
   async selectFirstAvailableTime(): Promise<void> {
     await expect(this.timeOptions.first()).toBeVisible();
+
     await this.timeOptions.first().click();
-    await expect(this.timeOptions.first()).toHaveAttribute('aria-pressed', 'true');
+
+    await expect(this.timeOptions.first()).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
   }
 
-  async fillPersonalData(name: string, comments: string,): Promise<void> {
+  async fillPersonalData(
+    name: string,
+    phone: string,
+    comments = '',
+  ): Promise<void> {
     await this.nameInput.fill(name);
+    await this.phoneInput.fill(phone);
     await this.commentsInput.fill(comments);
   }
 
+  async submit(): Promise<void> {
+    await this.reserveButton.click();
+  }
+
   async expectSummary(): Promise<void> {
-    await expect(this.summary).toContainText('60 minutos');
     await expect(this.summary).toContainText('$25.000');
   }
 
   async expectSelectedDayAndTime(): Promise<void> {
-    await expect(this.section.locator('.days .opt[aria-pressed="true"]'),).toHaveCount(1);
-    await expect(this.section.locator('.times .opt[aria-pressed="true"]'),).toHaveCount(1);
+    await expect(
+      this.section.locator('.days .opt[aria-pressed="true"]'),
+    ).toHaveCount(1);
+
+    await expect(
+      this.section.locator('.times .opt[aria-pressed="true"]'),
+    ).toHaveCount(1);
   }
 
-  async getWhatsAppUrl(): Promise<string> {
-    const href = await this.reserveLink.getAttribute('href');
-
-    expect(href).not.toBeNull();
-
-    return href!;
-  }
-
-  async expectValidationMessage(message: string,): Promise<void> {
+  async expectValidationMessage(message: string): Promise<void> {
     await expect(this.errorMessage).toHaveText(message);
   }
 }
