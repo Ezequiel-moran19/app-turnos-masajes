@@ -1,119 +1,31 @@
-# Masajes y recuperación muscular · Lanús Oeste
+Masajes y recuperación muscular · Lanús Oeste
+Aplicación web orientada a la gestión de servicios de masajes y recuperación muscular, diseñada para ofrecer a los clientes una forma sencilla de conocer los tratamientos disponibles y solicitar turnos online.
 
-Aplicación web para consultar servicios de masajes, conocer las modalidades de atención y solicitar turnos de manera online.
+Sobre el proyecto
+El proyecto busca digitalizar la experiencia de atención al cliente, centralizando la información de los servicios, horarios, zona de atención y solicitudes de turnos en una única plataforma.
 
-Desarrollada con Angular 22 y TypeScript, con una interfaz adaptable a dispositivos móviles y computadoras.
+La interfaz está diseñada para ser intuitiva, accesible y adaptable a distintos dispositivos.
 
-## Características
+Servicios
+Masajes descontracturantes.
+Masajes deportivos.
+Recuperación muscular y lesiones.
+Funcionalidades para clientes
+Consulta de servicios y tratamientos disponibles.
+Visualización de precios y duración de las sesiones.
+Consulta de horarios de atención.
+Selección de día y horario para solicitar un turno.
+Envío de solicitudes mediante WhatsApp.
+Consulta de la zona de atención mediante un mapa con ubicación aproximada.
+Tecnologías utilizadas
+Angular 22
+TypeScript
+Bootstrap 5
+Bootstrap Icons
+Supabase
+Leaflet
+Calidad y pruebas
+El proyecto incorpora pruebas automatizadas E2E con Playwright para validar los principales flujos de navegación y solicitud de turnos, junto con un proceso de integración continua mediante GitHub Actions.
 
-- Presentación de los servicios disponibles.
-- Información sobre masajes deportivos y descontracturantes.
-- Información sobre recuperación muscular.
-- Consulta de horarios y disponibilidad.
-- Solicitud de turnos online.
-- Integración con WhatsApp para facilitar el contacto.
-- Mapa de zona de atención con ubicación aproximada, preservando la dirección particular.
-- Diseño responsive.
-
-## Tecnologías
-
-- Angular 22
-- TypeScript 6
-- Bootstrap 5
-- Bootstrap Icons
-- Supabase
-- Leaflet
-- Playwright
-
-## Requisitos
-
-- Node.js 22.12 o superior.
-- npm.
-
-## Instalación
-
-Clonar el repositorio:
-
-```bash
-git clone URL_DEL_REPOSITORIO
-```
-
-Ingresar al proyecto:
-
-```bash
-cd page-masajes
-```
-
-Instalar dependencias:
-
-```bash
-npm install
-```
-
-Iniciar el servidor de desarrollo:
-
-```bash
-npm start
-```
-
-La aplicación estará disponible en:
-
-http://localhost:4200/
-
-## Compilación
-
-Generar la versión de producción:
-
-```bash
-npm run build
-```
-
-Los archivos compilados se generan en:
-
-```text
-dist/masajes-lanus-oeste/browser/
-```
-
-## Pruebas
-
-El proyecto utiliza Playwright para realizar pruebas automatizadas de extremo a extremo (E2E).
-
-Ejecutar todas las pruebas:
-
-```bash
-npx playwright test
-```
-
-Visualizar el informe:
-
-```bash
-npx playwright show-report
-```
-
-## Estructura general
-
-```text
-src/
-├── app/
-│   ├── core/
-│   ├── public/
-│   └── ...
-├── environments/
-├── index.html
-└── styles.css
-
-e2e/
-├── pages/
-├── support/
-└── tests/
-```
-
-## Privacidad y configuración
-
-La aplicación utiliza una ubicación aproximada para representar la zona de atención. No se publica la dirección particular.
-
-La configuración de conexión utiliza una clave pública de Supabase. Las claves privadas y credenciales sensibles no deben incluirse en el repositorio.
-
-## Estado del proyecto
-
-Proyecto en desarrollo, con funcionalidades de consulta de servicios y solicitud de turnos, pruebas automatizadas y proceso de integración continua mediante GitHub Actions.
+Objetivo
+Construir una plataforma web que simplifique la comunicación con los clientes, facilite la solicitud de turnos y permita gestionar los servicios de manera organizada, manteniendo una experiencia de uso simple y clara.
