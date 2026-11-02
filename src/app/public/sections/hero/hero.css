@@ -1,6 +1,16 @@
-:host { display: block; }
-.hero { position: relative; padding: 48px 0 56px; }
-.hero-title { color: #ffffff; }
+
+:host {
+  display: block;
+}
+
+.hero {
+  position: relative;
+  padding: 48px 0 56px;
+}
+
+.hero-title {
+  color: #ffffff;
+}
 
 .hero-title span {
   background: linear-gradient(90deg, #ffffff 0%, #0eb0a4 35%, #ffffff 65%, #0eb0a4 100%);
@@ -12,9 +22,46 @@
   animation: gradientMove 5s ease-in-out infinite alternate;
 }
 
+/* Botón reservar */
+.hero .btn-brand {
+  position: relative;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0eb0a4, #087f78);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  padding: 12px 28px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow:
+    0 0 0 3px rgba(14, 176, 164, 0.18),
+    0 5px 18px rgba(14, 176, 164, 0.35);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.hero .btn-brand:hover {
+  color: #ffffff;
+  background: linear-gradient(135deg, #16cfc0, #0a958c);
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 0 4px rgba(14, 176, 164, 0.22),
+    0 8px 24px rgba(14, 176, 164, 0.5);
+}
+
+.hero .btn-brand:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 4px;
+}
+
 @keyframes gradientMove {
-  from { background-position: 0% 50%; }
-  to { background-position: 100% 50%; }
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
 }
 
 .hero .lead {
@@ -99,10 +146,23 @@
     background: rgba(7, 28, 32, 0.68);
   }
 
-  .hero-content { position: relative; z-index: 1; }
-  .hero .lead, .hero .eyebrow { color: #ffffff; }
-  .hero-visual { display: none; }
-  .hero-badge { display: none; }
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero .lead,
+  .hero .eyebrow {
+    color: #ffffff;
+  }
+
+  .hero-visual {
+    display: none;
+  }
+
+  .hero-badge {
+    display: none;
+  }
 
   .chips li {
     color: #ffffff;
@@ -113,7 +173,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero-title span,
-  .hero-badge {
+  .hero-badge,
+  .hero .btn-brand {
     animation: none;
+    transition: none;
   }
 }
