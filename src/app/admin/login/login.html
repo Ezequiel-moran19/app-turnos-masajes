@@ -4,43 +4,29 @@
   <div class="login-card card border-0 shadow-lg w-100">
 
     <div class="card-body p-4 p-md-5">
-
       <div class="text-center mb-4">
-
-        <div class="login-icon mx-auto mb-3">
-          <i class="bi bi-person-lock" aria-hidden="true"></i>
-        </div>
-
+        <div class="login-icon mx-auto mb-3"> <i class="bi bi-person-lock" aria-hidden="true"></i> </div>
         <p class="eyebrow mb-2">Administración</p>
-
         <h1 class="login-title mb-2"> Iniciar sesión </h1>
-
         <p class="login-subtitle mb-0"> Ingresá tus credenciales para acceder al panel. </p>
-
       </div>
 
       <form (ngSubmit)="submit()" #loginForm="ngForm">
 
         <div class="mb-3">
-
           <label for="email" class="form-label"> Email </label>
-
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-envelope" aria-hidden="true"></i> </span>
             <input id="email" name="email" type="email" class="form-control" placeholder="tu@email.com" [(ngModel)]="email" autocomplete="username" required email />
           </div>
-
         </div>
 
         <div class="mb-4">
-
           <label for="password" class="form-label"> Contraseña </label>
-
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-lock" aria-hidden="true"></i> </span>
             <input id="password" name="password" type="password" class="form-control" placeholder="Ingresá tu contraseña" [(ngModel)]="password" autocomplete="current-password" required />
           </div>
-
         </div>
 
         @if (error()) {

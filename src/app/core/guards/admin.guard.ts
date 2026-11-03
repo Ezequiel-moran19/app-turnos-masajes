@@ -9,7 +9,6 @@ export const adminGuard: CanActivateFn = async (_route, state) => {
   try {
     if (await auth.isAdmin()) return true;
   } catch {
-    // Si la sesión no puede validarse, se envía al login.
   }
 
   return router.createUrlTree(['/admin/login'], {

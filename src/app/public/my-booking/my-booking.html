@@ -3,32 +3,22 @@
     <div class="col-12 col-md-8 col-lg-6">
       <section class="card border-0 shadow-sm">
         <div class="card-body p-4 p-md-5">
-          <p class="text-uppercase small fw-semibold text-secondary mb-2">
-            Gestión de reservas
-          </p>
+          <p class="text-uppercase small fw-semibold text-secondary mb-2"> Gestión de reservas </p>
 
           <h1 class="h3 mb-4">Mi turno</h1>
 
           @if (loading()) {
             <div class="text-center py-5">
-              <div
-                class="spinner-border text-secondary"
-                role="status"
-                aria-label="Cargando"
-              ></div>
+              <div class="spinner-border text-secondary" role="status" aria-label="Cargando" ></div>
               <p class="text-secondary mt-3 mb-0">Consultando tu turno...</p>
             </div>
           } @else {
             @if (error()) {
-              <div class="alert alert-danger" role="alert">
-                {{ error() }}
-              </div>
+              <div class="alert alert-danger" role="alert"> {{ error() }} </div>
             }
 
             @if (message()) {
-              <div class="alert alert-info" role="status">
-                {{ message() }}
-              </div>
+              <div class="alert alert-info" role="status"> {{ message() }} </div>
             }
 
             @if (booking(); as item) {
@@ -40,17 +30,12 @@
               <div class="row g-3 mb-4">
                 <div class="col-12 col-sm-6">
                   <p class="text-secondary mb-1">Fecha</p>
-                  <p class="fw-semibold mb-0">
-                    {{ formatDate(item.booking_date) }}
-                  </p>
+                  <p class="fw-semibold mb-0"> {{ formatDate(item.booking_date) }} </p>
                 </div>
 
                 <div class="col-12 col-sm-6">
                   <p class="text-secondary mb-1">Horario</p>
-                  <p class="fw-semibold mb-0">
-                    {{ formatTime(item.start_time) }} a
-                    {{ formatTime(item.end_time) }} hs
-                  </p>
+                  <p class="fw-semibold mb-0"> {{ formatTime(item.start_time) }} a {{ formatTime(item.end_time) }} hs </p>
                 </div>
               </div>
 
@@ -62,38 +47,26 @@
                   [class.text-bg-warning]="item.status === 'pending'"
                   [class.text-bg-success]="item.status === 'confirmed'"
                   [class.text-bg-danger]="item.status === 'cancelled'"
-                  [class.text-bg-secondary]="item.status === 'completed'"
-                >
+                  [class.text-bg-secondary]="item.status === 'completed'" >
                   {{ statusLabel(item.status) }}
                 </span>
               </div>
 
               @if (canCancel) {
-                <button
-                  type="button"
-                  class="btn btn-outline-danger w-100"
-                  [disabled]="cancelling()"
-                  (click)="cancel()"
-                >
+                <button type="button" class="btn btn-outline-danger w-100" [disabled]="cancelling()" (click)="cancel()">
                   {{ cancelling() ? 'Cancelando...' : 'Cancelar turno' }}
                 </button>
               } @else if (item.status === 'cancelled') {
-                <p class="text-secondary mb-0">
-                  Este turno fue cancelado.
-                </p>
+                <p class="text-secondary mb-0"> Este turno fue cancelado. </p>
               } @else {
-                <p class="text-secondary mb-0">
-                  Este turno ya fue completado.
-                </p>
+                <p class="text-secondary mb-0"> Este turno ya fue completado. </p>
               }
             }
           }
         </div>
       </section>
 
-      <p class="text-secondary small text-center mt-3">
-        Si necesitás ayuda, comunicate por WhatsApp.
-      </p>
+      <p class="text-secondary small text-center mt-3"> Si necesitás ayuda, comunicate por WhatsApp. </p>
     </div>
   </div>
 </main>

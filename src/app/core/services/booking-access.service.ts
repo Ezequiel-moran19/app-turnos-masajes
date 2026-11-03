@@ -19,38 +19,23 @@ export class BookingAccessService {
 
   async createToken(): Promise<BookingAccessToken> {
     if (!globalThis.crypto?.subtle) {
-      throw new Error(
-        'El navegador no permite generar un enlace seguro. Usá HTTPS o localhost.',
-      );
+      throw new Error('El navegador no permite generar un enlace seguro. Usá HTTPS o localhost.',);
     }
 
-    const tokenBytes = globalThis.crypto.getRandomValues(
-      new Uint8Array(32),
-    );
-
+    const tokenBytes = globalThis.crypto.getRandomValues(new Uint8Array(32),);
     const token = this.toHex(tokenBytes);
-
-    const hashBuffer = await globalThis.crypto.subtle.digest(
-      'SHA-256',
-      tokenBytes,
-    );
-
+    const hashBuffer = await globalThis.crypto.subtle.digest('SHA-256',tokenBytes);
     const hash = this.toHex(new Uint8Array(hashBuffer));
 
     return { token, hash };
   }
 
-  /**
-   * Genera un enlace privado para un turno existente.
-   * Esta operación requiere permisos de administrador.
-   */
+  // Genera un enlace privado para un turno existente.
+  // Esta operación requiere permisos de administrador.
   async createAccessLink(bookingId: string): Promise<string> {
     const { token, hash } = await this.createToken();
 
-    const { error } = await supabase.rpc('admin_set_booking_access', {
-      p_booking_id: bookingId,
-      p_token_hash: hash,
-    });
+    const { error } = await supabase.rpc('admin_set_booking_access', { p_booking_id: bookingId, p_token_hash: hash });
 
     if (error) {
       throw new Error(`No se pudo generar el enlace: ${error.message}`);
@@ -59,9 +44,7 @@ export class BookingAccessService {
     return this.getAccessUrl(token);
   }
 
-  /**
-   * Construye el enlace privado de consulta del turno.
-   */
+//Construye el enlace privado de consulta del turno.
   getAccessUrl(token: string): string {
     return `${window.location.origin}/mi-turno/${token}`;
   }
@@ -69,9 +52,7 @@ export class BookingAccessService {
   async getByToken(token: string): Promise<PrivateBooking | null> {
     const { data, error } = await supabase.rpc(
       'get_booking_by_token',
-      {
-        p_token: token,
-      },
+      { p_token: token },
     );
 
     if (error) throw new Error(error.message);
@@ -82,9 +63,7 @@ export class BookingAccessService {
   async cancelByToken(token: string): Promise<boolean> {
     const { data, error } = await supabase.rpc(
       'cancel_booking_by_token',
-      {
-        p_token: token,
-      },
+      { p_token: token },
     );
 
     if (error) throw new Error(error.message);
@@ -93,8 +72,6 @@ export class BookingAccessService {
   }
 
   private toHex(bytes: Uint8Array): string {
-    return Array.from(bytes)
-      .map((byte) => byte.toString(16).padStart(2, '0'))
-      .join('');
+    return Array.from(bytes).map((byte) => byte.toString(16).padStart(2, '0')).join('');
   }
 }

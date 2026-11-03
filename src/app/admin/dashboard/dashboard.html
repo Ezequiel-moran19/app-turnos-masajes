@@ -1,16 +1,13 @@
+<div class="dashboard-page container-fluid py-4" data-bs-theme="dark">
 
-<div class="dashboard-page container-fluid py-4">
-
-  <header class="mb-4">
-    <p class="eyebrow mb-2">Administración</p>
-    <h1 class="page-title">Resumen</h1>
-    <p class="text-muted mb-0">
-      Estado general de los turnos registrados.
-    </p>
+  <header class="dashboard-header mb-4">
+    <p class="dashboard-eyebrow mb-1">Administración</p>
+    <h1 class="dashboard-title mb-1">Resumen</h1>
+    <p class="dashboard-subtitle mb-0"> Estado general de los turnos registrados. </p>
   </header>
 
   @if (loading()) {
-    <div class="loading-state">
+    <div class="dashboard-loading mb-3">
       <div class="spinner-border spinner-border-sm me-2" role="status">
         <span class="visually-hidden">Cargando...</span>
       </div>
@@ -19,52 +16,89 @@
   }
 
   @if (error()) {
-    <div class="alert alert-danger" role="alert">
-      {{ error() }}
+    <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <div>{{ error() }}</div>
     </div>
   }
 
-  <div class="row g-3 stats">
+  <div class="row g-3 mb-3">
+    @for (s of stats(); track s.label) {
+      <div class="col-12 col-sm-6 col-xl-4">
+        <article class="dashboard-stat h-100">
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex justify-content-between align-items-center gap-3">
+              <span class="stat-label">{{ s.label }}</span>
+              <span [class]="'stat-icon icon-' + s.tone" aria-hidden="true"> <i [class]="'bi ' + s.icon"></i>
+              </span>
+            </div>
 
-    <div class="col-12 col-sm-6 col-xl-4">
-      <article class="stat-card h-100">
-        <div class="stat-header">
-          <span class="stat-label">Turnos registrados</span>
-          <span class="stat-icon total-icon" aria-hidden="true">
-            <i class="bi bi-calendar-check"></i>
-          </span>
+            <strong class="stat-value">{{ s.value }}</strong>
+            <small class="stat-description">{{ s.description }}</small>
+          </div>
+        </article>
+      </div>
+    }
+  </div>
+
+  <div class="row g-3">
+
+    <div class="col-12 col-lg-6">
+      <article class="dashboard-chart h-100">
+        <div class="chart-content">
+          <div class="d-flex align-items-center gap-2 mb-4">
+            <span class="chart-icon">
+              <i class="bi bi-pie-chart-fill"></i>
+            </span>
+            <h2 class="chart-title mb-0">Turnos por estado</h2>
+          </div>
+
+          @if (counts().total === 0) {
+            @if (!loading()) {
+              <div class="chart-empty">
+                <i class="bi bi-bar-chart"></i>
+                <span>Todavía no hay turnos para graficar.</span>
+              </div>
+            }
+          } @else {
+            <div class="chart-box">
+              <canvas #statusChart aria-label="Gráfico de turnos por estado" role="img"> </canvas>
+            </div>
+          }
         </div>
-        <strong class="stat-value">{{ counts().total }}</strong>
-        <span class="stat-description">Total de reservas registradas</span>
       </article>
     </div>
 
-    <div class="col-12 col-sm-6 col-xl-4">
-      <article class="stat-card h-100">
-        <div class="stat-header">
-          <span class="stat-label">Pendientes</span>
-          <span class="stat-icon pending-icon" aria-hidden="true">
-            <i class="bi bi-clock-history"></i>
-          </span>
-        </div>
-        <strong class="stat-value">{{ counts().pending }}</strong>
-        <span class="stat-description">Reservas por confirmar</span>
-      </article>
-    </div>
+    <div class="col-12 col-lg-6">
+      <article class="dashboard-chart h-100">
+        <div class="chart-content">
+          <div class="d-flex align-items-center gap-2 mb-4">
+            <span class="chart-icon">
+              <i class="bi bi-bar-chart-line-fill"></i>
+            </span>
+            <h2 class="chart-title mb-0">Distribución</h2>
+          </div>
 
-    <div class="col-12 col-sm-6 col-xl-4">
-      <article class="stat-card h-100">
-        <div class="stat-header">
-          <span class="stat-label">Confirmados</span>
-          <span class="stat-icon confirmed-icon" aria-hidden="true">
-            <i class="bi bi-check-circle"></i>
-          </span>
+          <div class="d-flex flex-column gap-4">
+            @for (item of breakdown(); track item.label) {
+              <div>
+                <div class="d-flex justify-content-between align-items-baseline small mb-2">
+                  <span class="distribution-label">{{ item.label }}</span>
+                  <span class="distribution-value">
+                    <strong>{{ item.value }}</strong> · {{ item.percent }}%
+                  </span>
+                </div>
+
+                <div class="progress dist-progress" role="progressbar" [attr.aria-label]="item.label" [attr.aria-valuenow]="item.percent" aria-valuemin="0" aria-valuemax="100">
+                  <div [class]="'progress-bar bar-' + item.tone" [style.width.%]="item.percent">
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
         </div>
-        <strong class="stat-value">{{ counts().confirmed }}</strong>
-        <span class="stat-description">Reservas confirmadas</span>
       </article>
     </div>
 
   </div>
-
 </div>

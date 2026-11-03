@@ -23,10 +23,7 @@ function fromISO(key: string): Date {
 }
 
 function addMinutes(time: string, minutes: number): string {
-  const total =
-    Number(time.slice(0, 2)) * 60 +
-    Number(time.slice(3, 5)) +
-    minutes;
+  const total = Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5)) + minutes;
 
   return `${pad(Math.floor(total / 60) % 24)}:${pad(total % 60)}`;
 }
@@ -43,7 +40,6 @@ export class BookingStore {
   readonly comments = signal('');
   readonly error = signal('');
   readonly loading = signal(true);
-
   readonly selectedDate = signal<string | null>(null);
   readonly selectedTime = signal<string | null>(null);
 
@@ -51,7 +47,6 @@ export class BookingStore {
   private readonly exceptions = signal<ScheduleExceptionRecord[]>([]);
   private readonly taken = signal<string[]>([]);
   private readonly availabilityFailed = signal(false);
-
   readonly priceText = computed( () => '$' + BOOKING_PRICE.toLocaleString('es-AR') );
 
   readonly dayOptions = computed<DayOption[]>(() => {
@@ -71,13 +66,9 @@ export class BookingStore {
 
       options.push({
         key,
-        weekday: d.toLocaleDateString('es-AR', {
-          weekday: 'short',
-        }).replace('.', ''),
+        weekday: d.toLocaleDateString('es-AR', { weekday: 'short'  }).replace('.', ''),
         day: d.getDate(),
-        month: d.toLocaleDateString('es-AR', {
-          month: 'short',
-        }).replace('.', ''),
+        month: d.toLocaleDateString('es-AR', { month: 'short' }).replace('.', ''),
         selected: key === selected,
       });
     }
@@ -100,11 +91,7 @@ export class BookingStore {
 
     if (!key) return '';
 
-    const text = fromISO(key).toLocaleDateString('es-AR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-    });
+    const text = fromISO(key).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
 
     return text.charAt(0).toUpperCase() + text.slice(1);
   });
@@ -115,49 +102,31 @@ export class BookingStore {
 
   private async init(): Promise<void> {
     try {
-      const [weekly, exceptions] = await Promise.all([
-        this.schedule.getWeekly(),
-        this.schedule.getExceptions(),
-      ]);
+      const [weekly, exceptions] = await Promise.all([ this.schedule.getWeekly(), this.schedule.getExceptions() ]);
 
       this.weekly.set(weekly);
       this.exceptions.set(exceptions);
     } catch (error) {
-      this.error.set(
-        error instanceof Error
-          ? error.message
-          : 'No se pudieron cargar los datos para reservar.',
-      );
+      this.error.set(error instanceof Error ? error.message : 'No se pudieron cargar los datos para reservar.');
     } finally {
       this.loading.set(false);
     }
   }
 
   private slotsFor(key: string): string[] {
-    const exception = this.exceptions().find(
-      (e) => e.exception_date === key,
-    );
+    const exception = this.exceptions().find( (e) => e.exception_date === key );
 
     let slots: string[];
 
     if (exception) {
       slots = exception.closed ? [] : exception.slots;
     } else {
-      const day = this.weekly().find(
-        (w) => w.weekday === fromISO(key).getDay(),
-      );
-
+      const day = this.weekly().find( (w) => w.weekday === fromISO(key).getDay() );
       slots = day?.enabled ? day.slots : [];
     }
 
     const limit = Date.now() + LEAD_MINUTES * 60_000;
-
-    return [...slots]
-      .sort()
-      .filter(
-        (time) =>
-          new Date(`${key}T${time}:00`).getTime() > limit,
-      );
+    return [...slots].sort().filter((time) => new Date(`${key}T${time}:00`).getTime() > limit );
   }
 
   async pickDay(key: string): Promise<void> {
@@ -242,9 +211,7 @@ export class BookingStore {
     });
 
     // Conservar el enlace para incluirlo en WhatsApp.
-    this.privateBookingUrl.set(
-      this.bookingAccess.getAccessUrl(token),
-    );
+    this.privateBookingUrl.set(this.bookingAccess.getAccessUrl(token));
 
     this.taken.update((times) => [...times, time]);
   }

@@ -35,11 +35,7 @@ export class Tratamientos implements OnInit {
         })),
       );
     } catch (error) {
-      this.error.set(
-        error instanceof Error
-          ? error.message
-          : 'No se pudieron cargar los tratamientos.',
-      );
+      this.error.set(error instanceof Error ? error.message : 'No se pudieron cargar los tratamientos.');
     } finally {
       this.loading.set(false);
     }

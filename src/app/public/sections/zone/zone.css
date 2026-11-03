@@ -1,6 +1,4 @@
-:host {
-  display: block;
-}
+:host { display: block; }
 
 .zone-title {
   width: fit-content;
@@ -16,13 +14,8 @@
 }
 
 @keyframes gradientMove {
-  from {
-    background-position: 0% 50%;
-  }
-
-  to {
-    background-position: 100% 50%;
-  }
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
 }
 
 .map {
@@ -60,22 +53,10 @@
   pointer-events: none;
 }
 
-.leaf {
-  position: absolute;
-  inset: 0;
-  visibility: hidden;
-}
-
-.map.live .leaf {
-  visibility: visible;
-}
-
-.map.live .fb {
-  display: none;
-}
+.leaf { position: absolute; inset: 0; visibility: hidden; }
+.map.live .leaf { visibility: visible; }
+.map.live .fb { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .zone-title {
-    animation: none;
-  }
+  .zone-title { animation: none; }
 }

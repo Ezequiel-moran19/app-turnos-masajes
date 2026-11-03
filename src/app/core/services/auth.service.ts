@@ -4,17 +4,10 @@ import { supabase } from '../supabase.client';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   async signIn(email: string, password: string): Promise<void> {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     if (error) throw error;
 
-    const { data, error: profileError } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', (await supabase.auth.getUser()).data.user?.id ?? '')
-      .single();
+    const { data, error: profileError } = await supabase.from('profiles').select('role').eq('id', (await supabase.auth.getUser()).data.user?.id ?? '').single();
 
     if (profileError || data?.role !== 'admin') {
       await supabase.auth.signOut();
@@ -34,11 +27,7 @@ export class AuthService {
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) return false;
 
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userData.user.id)
-      .maybeSingle();
+    const { data, error } = await supabase.from('profiles').select('role').eq('id', userData.user.id).maybeSingle();
 
     return !error && data?.role === 'admin';
   }

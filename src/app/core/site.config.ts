@@ -14,16 +14,6 @@ export const SITE = {
 };
 
 export const CONTACTS: Contact[] = [
-  {
-    name: 'WhatsApp',
-    value: SITE.whatsapp.display,
-    icon: 'whatsapp',
-    href: `https://wa.me/${SITE.whatsapp.number}`,
-  },
-  {
-    name: 'Instagram',
-    value: '@masajesconeze',
-    icon: 'instagram',
-    href: 'https://www.instagram.com/masajesconeze',
-  },
+  { name: 'WhatsApp', value: SITE.whatsapp.display, icon: 'whatsapp', href: `https://wa.me/${SITE.whatsapp.number}` },
+  { name: 'Instagram', value: '@masajesconeze', icon: 'instagram', href: 'https://www.instagram.com/masajesconeze' },
 ];

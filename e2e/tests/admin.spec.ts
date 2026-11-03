@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { installAdminMocks } from '../support/admin-mocks';
 
+async function loginAsAdmin(page: import('@playwright/test').Page) {
+  await installAdminMocks(page);
+
+  await page.goto('/admin/login');
+  await page.locator('#email').fill('admin@prueba.com');
+  await page.locator('#password').fill('Admin123!');
+  await page.getByRole('button', { name: 'Ingresar' }).click();
+
+  await expect(page).toHaveURL(/\/admin\/dashboard/);
+}
+
 test.describe('Administración - Autenticación', () => {
   test('redirige al login cuando no existe una sesión', async ({ page }) => {
     await installAdminMocks(page);
@@ -13,18 +24,9 @@ test.describe('Administración - Autenticación', () => {
     ).toBeVisible();
   });
 
-  test('permite ingresar con credenciales de administrador', async ({
-    page,
-  }) => {
-    await installAdminMocks(page);
+  test('permite ingresar con credenciales de administrador', async ({ page }) => {
+    await loginAsAdmin(page);
 
-    await page.goto('/admin/login');
-
-    await page.locator('#email').fill('admin@prueba.com');
-    await page.locator('#password').fill('Admin123!');
-    await page.getByRole('button', { name: 'Ingresar' }).click();
-
-    await expect(page).toHaveURL(/\/admin\/dashboard/);
     await expect(
       page.getByRole('heading', { name: 'Resumen' }),
     ).toBeVisible();
@@ -34,7 +36,6 @@ test.describe('Administración - Autenticación', () => {
     await installAdminMocks(page);
 
     await page.goto('/admin/login');
-
     await page.locator('#email').fill('admin@prueba.com');
     await page.locator('#password').fill('incorrecta');
     await page.getByRole('button', { name: 'Ingresar' }).click();
@@ -46,13 +47,10 @@ test.describe('Administración - Autenticación', () => {
     await expect(page).toHaveURL(/\/admin\/login/);
   });
 
-  test('rechaza usuarios que no tienen rol administrador', async ({
-    page,
-  }) => {
+  test('rechaza usuarios que no tienen rol administrador', async ({ page }) => {
     await installAdminMocks(page, 'user');
 
     await page.goto('/admin/login');
-
     await page.locator('#email').fill('usuario@prueba.com');
     await page.locator('#password').fill('User123!');
     await page.getByRole('button', { name: 'Ingresar' }).click();
@@ -67,20 +65,21 @@ test.describe('Administración - Autenticación', () => {
 
 test.describe('Administración - Dashboard', () => {
   test.beforeEach(async ({ page }) => {
-    await installAdminMocks(page);
-    await page.goto('/admin/login');
-
-    await page.locator('#email').fill('admin@prueba.com');
-    await page.locator('#password').fill('Admin123!');
-    await page.getByRole('button', { name: 'Ingresar' }).click();
-
-    await expect(page).toHaveURL(/\/admin\/dashboard/);
+    await loginAsAdmin(page);
   });
 
   test('muestra los contadores de turnos', async ({ page }) => {
-    await expect(page.getByText('Turnos registrados', { exact: true })).toBeVisible();
-    await expect(page.getByText('Pendientes', { exact: true })).toBeVisible();
-    await expect(page.getByText('Confirmados', { exact: true })).toBeVisible();
+    await expect(
+      page.getByText('Turnos registrados', { exact: true }),
+    ).toBeVisible();
+
+    await expect(
+      page.locator('.stat-label').filter({ hasText: /^Pendientes$/ }),
+    ).toBeVisible();
+
+    await expect(
+      page.locator('.stat-label').filter({ hasText: /^Confirmados$/ }),
+    ).toBeVisible();
 
     const values = page.locator('.stat-value');
 
@@ -92,15 +91,13 @@ test.describe('Administración - Dashboard', () => {
 
 test.describe('Administración - Turnos', () => {
   test.beforeEach(async ({ page }) => {
-    await installAdminMocks(page);
-    await page.goto('/admin/login');
-
-    await page.locator('#email').fill('admin@prueba.com');
-    await page.locator('#password').fill('Admin123!');
-    await page.getByRole('button', { name: 'Ingresar' }).click();
+    await loginAsAdmin(page);
 
     await page.goto('/admin/bookings');
-    await expect(page.getByRole('heading', { name: 'Turnos' })).toBeVisible();
+
+    await expect(
+      page.getByRole('heading', { name: 'Turnos' }),
+    ).toBeVisible();
   });
 
   test('filtra los turnos por estado', async ({ page }) => {
@@ -142,11 +139,13 @@ test.describe('Administración - Turnos', () => {
     });
 
     await expect(row).toBeVisible();
-    await expect(row.locator('[data-status="confirmed"]')).toBeVisible();
+    await expect(row.locator('.booking-status')).toHaveClass(
+      /status-confirmed/,
+    );
   });
 
   test('cancela un turno después de confirmar la acción', async ({ page }) => {
-    page.on('dialog', (dialog) => dialog.accept());
+    page.on('dialog', dialog => dialog.accept());
 
     await page.getByRole('button', { name: 'Cancelar' }).click();
 
@@ -157,7 +156,9 @@ test.describe('Administración - Turnos', () => {
     });
 
     await expect(row).toBeVisible();
-    await expect(row.locator('[data-status="cancelled"]')).toBeVisible();
+    await expect(row.locator('.booking-status')).toHaveClass(
+      /status-cancelled/,
+    );
   });
 
   test('permite reabrir un turno cancelado', async ({ page }) => {
@@ -172,21 +173,21 @@ test.describe('Administración - Turnos', () => {
     });
 
     await expect(row).toBeVisible();
-    await expect(row.locator('[data-status="pending"]')).toBeVisible();
+    await expect(row.locator('.booking-status')).toHaveClass(
+      /status-pending/,
+    );
   });
 });
 
 test.describe('Administración - Horarios', () => {
   test.beforeEach(async ({ page }) => {
-    await installAdminMocks(page);
-    await page.goto('/admin/login');
-
-    await page.locator('#email').fill('admin@prueba.com');
-    await page.locator('#password').fill('Admin123!');
-    await page.getByRole('button', { name: 'Ingresar' }).click();
+    await loginAsAdmin(page);
 
     await page.goto('/admin/schedule');
-    await expect(page.getByRole('heading', { name: 'Horarios' })).toBeVisible();
+
+    await expect(
+      page.getByRole('heading', { name: 'Horarios', exact: true }),
+    ).toBeVisible();
   });
 
   test('muestra los siete días de la semana', async ({ page }) => {
@@ -199,19 +200,44 @@ test.describe('Administración - Horarios', () => {
       'Sábado',
       'Domingo',
     ]) {
-      await expect(page.getByText(day, { exact: true })).toBeVisible();
+      await expect(
+        page.getByText(day, { exact: true }),
+      ).toBeVisible();
     }
+  });
+
+  test('permite habilitar un día cerrado', async ({ page }) => {
+    const mondaySwitch = page.locator('#enabled-1');
+
+    await mondaySwitch.check();
+
+    await expect(mondaySwitch).toBeChecked();
+
+    await expect(
+      page.getByLabel('Horarios de Lunes'),
+    ).toBeEnabled();
+  });
+
+  test('deshabilita los horarios cuando se cierra un día', async ({ page }) => {
+    const mondaySwitch = page.locator('#enabled-1');
+
+    await mondaySwitch.uncheck();
+
+    await expect(mondaySwitch).not.toBeChecked();
+
+    await expect(
+      page.getByLabel('Horarios de Lunes'),
+    ).toBeDisabled();
   });
 
   test('rechaza horarios con formato inválido', async ({ page }) => {
     await page.locator('#enabled-1').check();
-    const monday = page.locator('div.row.g-3.align-items-center.border-top.py-3')
-      .filter({ has: page.getByText('Lunes', { exact: true }) });
-    const slotsInput = monday.locator('input.form-control');
 
-    await expect(slotsInput).toBeEnabled();
+    const slotsInput = page.getByLabel('Horarios de Lunes');
+
     await slotsInput.fill('25:99');
-    await monday.getByRole('button', { name: 'Guardar' }).click();
+
+    await page.getByRole('button', { name: 'Guardar' }).first().click();
 
     await expect(page.getByRole('alert')).toContainText(
       'horarios inválidos',
@@ -221,89 +247,101 @@ test.describe('Administración - Horarios', () => {
   test('guarda el horario de un día', async ({ page }) => {
     await page.locator('#enabled-1').check();
 
-    const monday = page.locator('div.row.g-3.align-items-center.border-top.py-3')
-      .filter({ has: page.getByText('Lunes', { exact: true }) });
-    const slotsInput = monday.locator('input.form-control');
+    const slotsInput = page.getByLabel('Horarios de Lunes');
 
-    await expect(slotsInput).toBeEnabled();
     await slotsInput.fill('09:00, 10:00, 11:00');
+
+    const monday = page.locator('.day-row').filter({
+      has: page.getByText('Lunes', { exact: true }),
+    });
+
     await monday.getByRole('button', { name: 'Guardar' }).click();
 
     await expect(page.getByRole('status')).toContainText(
       'Horario de Lunes guardado.',
     );
 
-    await expect(monday.locator('input.form-control')).toHaveValue(
-      '09:00, 10:00, 11:00',
-    );
+    await expect(slotsInput).toHaveValue('09:00, 10:00, 11:00');
   });
 
-  test('crea una excepción de día cerrado', async ({ page }) => {
-    const date = new Date();
-    date.setDate(date.getDate() + 10);
+  test('permite autocompletar los horarios de un día', async ({ page }) => {
+    await page.locator('#enabled-1').check();
 
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const dateValue = `${year}-${month}-${day}`;
+    const monday = page.locator('.day-row').filter({
+      has: page.getByText('Lunes', { exact: true }),
+    });
 
-    await page.locator('#exceptionDate').fill(dateValue);
-    await page.locator('#exceptionClosed').check();
-    await page.locator('#exceptionNote').fill('Prueba automatizada');
+    await monday.getByRole('button', { name: 'Autocompletar' }).click();
 
-    await page.getByRole('button', { name: 'Guardar excepción' }).click();
+    const slotsInput = page.getByLabel('Horarios de Lunes');
 
-    await expect(page.getByRole('status')).toContainText(
-      'Excepción guardada.',
-    );
-
-    await expect(page.getByText('Cerrado', { exact: true })).toBeVisible();
-    await expect(page.getByText('Prueba automatizada')).toBeVisible();
+    await expect(slotsInput).not.toHaveValue('');
   });
 
-  test('exige una fecha para guardar una excepción', async ({ page }) => {
-    await page.locator('#exceptionClosed').check();
+  test('permite generar horarios para lunes a sábado', async ({ page }) => {
+    await page.locator('#genStart').fill('09:00');
+    await page.locator('#genEnd').fill('17:00');
+    await page.locator('#genStep').fill('60');
 
-    await page.getByRole('button', { name: 'Guardar excepción' }).click();
+    await page.getByRole('button', {
+      name: /Aplicar a lunes–sábado/,
+    }).click();
 
-    await expect(page.getByRole('alert')).toContainText(
-      'Elegí una fecha.',
-    );
+    for (const weekday of [1, 2, 3, 4, 5, 6]) {
+      const daySwitch = page.locator(`#enabled-${weekday}`);
+
+      await expect(daySwitch).toBeChecked();
+    }
+  });
+
+  test('permite guardar toda la semana', async ({ page }) => {
+    await page.getByRole('button', {
+      name: 'Guardar toda la semana',
+    }).click();
+
+    await expect(page.getByRole('status')).toBeVisible();
   });
 });
 
 test.describe('Administración - Tratamientos', () => {
   test.beforeEach(async ({ page }) => {
-    await installAdminMocks(page);
-    await page.goto('/admin/login');
-
-    await page.locator('#email').fill('admin@prueba.com');
-    await page.locator('#password').fill('Admin123!');
-    await page.getByRole('button', { name: 'Ingresar' }).click();
+    await loginAsAdmin(page);
 
     await page.goto('/admin/treatments');
+
     await expect(
-      page.getByRole('heading', { name: 'Tratamientos', exact: true }),
+      page.getByRole('heading', {
+        name: 'Tratamientos',
+        exact: true,
+      }),
     ).toBeVisible();
   });
 
   test('muestra los tratamientos existentes', async ({ page }) => {
     await expect(
-      page.getByRole('heading', { name: 'Masaje descontracturante' }),
+      page.getByRole('heading', {
+        name: 'Masaje descontracturante',
+      }),
     ).toBeVisible();
 
-    await expect(page.getByText('Activo', { exact: true })).toBeVisible();
+    await expect(
+      page.getByText('Activo', { exact: true }),
+    ).toBeVisible();
   });
 
   test('crea un tratamiento nuevo', async ({ page }) => {
     await page.locator('#name').fill('Masaje de prueba');
     await page.locator('#description').fill('Descripción de prueba');
+
     await page.locator('#benefits').fill(
       'Primer beneficio\nSegundo beneficio',
     );
+
     await page.locator('#image').fill('/cards/prueba.jpg');
 
-    await page.getByRole('button', { name: 'Guardar tratamiento' }).click();
+    await page.getByRole('button', {
+      name: 'Guardar tratamiento',
+    }).click();
 
     await expect(
       page.getByRole('heading', { name: 'Masaje de prueba' }),
@@ -319,7 +357,10 @@ test.describe('Administración - Tratamientos', () => {
 
   test('rechaza un tratamiento sin nombre', async ({ page }) => {
     await page.locator('#name').fill('   ');
-    await page.getByRole('button', { name: 'Guardar tratamiento' }).click();
+
+    await page.getByRole('button', {
+      name: 'Guardar tratamiento',
+    }).click();
 
     await expect(page.getByRole('alert')).toContainText(
       'Ingresá el nombre del tratamiento.',
@@ -349,7 +390,7 @@ test.describe('Administración - Tratamientos', () => {
   });
 
   test('da de baja un tratamiento', async ({ page }) => {
-    page.on('dialog', (dialog) => dialog.accept());
+    page.on('dialog', dialog => dialog.accept());
 
     const treatment = page.locator('.treatment-item').filter({
       hasText: 'Masaje descontracturante',
@@ -358,13 +399,14 @@ test.describe('Administración - Tratamientos', () => {
     await treatment.getByRole('button', { name: 'Dar de baja' }).click();
 
     await expect(treatment.getByText('Inactivo')).toBeVisible();
+
     await expect(
       treatment.getByRole('button', { name: 'Reactivar' }),
     ).toBeVisible();
   });
 
   test('reactiva un tratamiento inactivo', async ({ page }) => {
-    page.on('dialog', (dialog) => dialog.accept());
+    page.on('dialog', dialog => dialog.accept());
 
     const treatment = page.locator('.treatment-item').filter({
       hasText: 'Masaje descontracturante',

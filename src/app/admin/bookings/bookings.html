@@ -1,126 +1,229 @@
-<div class="bookings-page container-fluid py-4">
-
+<div class="bookings-page container-fluid py-4 px-3 px-lg-4" data-bs-theme="dark">
   <header class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
-      <p class="eyebrow mb-2">Administración</p>
-      <h1 class="page-title">Turnos</h1>
-      <p class="text-muted mb-0">Reservas guardadas en Supabase.</p>
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="header-icon"> <i class="bi bi-calendar2-check"></i> </span>
+        <span class="section-label">PANEL DE ADMINISTRACIÓN</span>
+      </div>
+      <h1 class="h2 fw-bold mb-1">Gestión de turnos</h1>
+      <p class="text-secondary mb-0"> Consultá y administrá las reservas de tus clientes. </p>
     </div>
 
-    <button type="button" class="btn btn-outline-secondary refresh-btn" (click)="load()" [disabled]="loading()">
-      <span class="me-2" aria-hidden="true">↻</span> {{ loading() ? 'Actualizando...' : 'Actualizar' }}
+    <button type="button" class="btn btn-refresh d-inline-flex align-items-center gap-2 align-self-start align-self-md-center"
+      (click)="load()" [disabled]="loading()" >
+      <i class="bi bi-arrow-clockwise" [class.spin]="loading()"></i> {{ loading() ? 'Actualizando...' : 'Actualizar datos' }}
     </button>
   </header>
 
-  <section class="booking-toolbar">
+  <section class="row g-3 mb-4">
 
-    <div class="booking-tabs" role="tablist" aria-label="Filtrar turnos">
-      @for (f of filters; track f.value) {
-        <button type="button" role="tab" class="booking-tab"
-          [class.active]="filter() === f.value" [attr.aria-selected]="filter() === f.value" (click)="filter.set(f.value)">
-          {{ f.label }}
-          <span class="count">{{ counts()[f.value] }}</span>
-        </button>
-      }
+    <div class="col-6 col-xl">
+      <div class="stat-card">
+        <div class="stat-icon stat-total">
+          <i class="bi bi-calendar-week"></i>
+        </div>
+        <div>
+          <span class="stat-label">Total</span> <strong class="stat-value">{{ counts().all }}</strong>
+        </div>
+      </div>
     </div>
 
-    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
-      <div class="search-wrapper">
-        <input type="search" class="form-control" placeholder="Buscar por nombre o teléfono" aria-label="Buscar por nombre o teléfono" [value]="query()" (input)="onSearch($event)" />
+    <div class="col-6 col-xl">
+      <div class="stat-card">
+        <div class="stat-icon stat-pending">
+          <i class="bi bi-hourglass-split"></i>
+        </div>
+        <div>
+          <span class="stat-label">Pendientes</span>
+          <strong class="stat-value">{{ counts().pending }}</strong>
+        </div>
       </div>
+    </div>
 
-      <div class="form-check form-switch upcoming-check">
-        <input id="onlyUpcoming" class="form-check-input" type="checkbox" [checked]="onlyUpcoming()" (change)="onlyUpcoming.set(!onlyUpcoming())" />
-        <label class="form-check-label" for="onlyUpcoming">
-          Solo próximos
-        </label>
+    <div class="col-6 col-xl">
+      <div class="stat-card">
+        <div class="stat-icon stat-confirmed">
+          <i class="bi bi-check-circle"></i>
+        </div>
+        <div>
+          <span class="stat-label">Confirmados</span> <strong class="stat-value">{{ counts().confirmed }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-xl">
+      <div class="stat-card">
+        <div class="stat-icon stat-completed">
+          <i class="bi bi-check2-all"></i>
+        </div>
+        <div>
+          <span class="stat-label">Completados</span> <strong class="stat-value">{{ counts().completed }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-xl">
+      <div class="stat-card">
+        <div class="stat-icon stat-cancelled">
+          <i class="bi bi-x-circle"></i>
+        </div>
+        <div>
+          <span class="stat-label">Cancelados</span> <strong class="stat-value">{{ counts().cancelled }}</strong>
+        </div>
       </div>
     </div>
 
   </section>
 
+  <section class="booking-panel mb-3">
+
+    <div class="d-flex flex-column flex-xl-row justify-content-between gap-3">
+
+      <div>
+        <span class="panel-label">ESTADO DE LAS RESERVAS</span>
+        <div class="d-flex flex-wrap gap-2 mt-2" role="tablist" aria-label="Filtrar turnos">
+          @for (f of filters; track f.value) {
+            <button type="button" role="tab" class="btn filter-btn" [class.active]="filter() === f.value" [attr.aria-selected]="filter() === f.value" (click)="filter.set(f.value)">
+              {{ f.label }} <span class="filter-count">{{ counts()[f.value] }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="d-flex flex-column flex-sm-row align-items-sm-end gap-3">
+        <div class="search-wrapper">
+          <label for="bookingSearch" class="panel-label mb-2"> BUSCAR CLIENTE </label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i> </span>
+            <input id="bookingSearch" type="search" class="form-control" placeholder="Nombre o teléfono..." aria-label="Buscar por nombre o teléfono" [value]="query()" (input)="onSearch($event)"/>
+          </div>
+        </div>
+        <div class="form-check form-switch upcoming-switch mb-2">
+          <input id="onlyUpcoming" class="form-check-input" type="checkbox" role="switch" [checked]="onlyUpcoming()" (change)="onlyUpcoming.set(!onlyUpcoming())"/>
+          <label class="form-check-label" for="onlyUpcoming">Solo próximos</label>
+        </div>
+      </div>
+    </div>
+  </section>
+
   @if (error()) {
-    <div class="alert alert-danger mt-3 mb-3" role="alert">
-      {{ error() }}
+    <div class="alert booking-alert d-flex align-items-center gap-2 mb-3" role="alert">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <div>{{ error() }}</div>
     </div>
   }
 
   @if (loading() && rows().length === 0) {
-    <div class="loading-state">
-      <div class="spinner-border spinner-border-sm me-2" role="status">
+
+    <div class="booking-panel text-center py-5">
+      <div class="spinner-border text-info mb-3" role="status">
         <span class="visually-hidden">Cargando...</span>
       </div>
-      Cargando turnos...
+      <p class="text-secondary mb-0">Cargando reservas...</p>
     </div>
+
   } @else {
 
-    <div class="table-responsive booking-table-wrapper">
-      <table class="table booking-table align-middle mb-0">
-        <thead>
-          <tr>
-            <th scope="col">Fecha</th>
-            <th scope="col">Horario</th>
-            <th scope="col">Cliente</th>
-            <th scope="col">Servicio</th>
-            <th scope="col">Estado</th>
-            <th scope="col">Acciones</th>
-          </tr>
-        </thead>
+    <div class="booking-panel p-0 overflow-hidden">
 
-        <tbody>
-          @for (row of visible(); track row.id) {
-            <tr [class.busy]="busyId() === row.id">
+      <div class="table-heading d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 p-3 p-lg-4">
+        <div>
+          <h2 class="h5 fw-semibold mb-1">Reservas registradas</h2>
+          <p class="small text-secondary mb-0">{{ visible().length }} resultados encontrados  </p>
+        </div>
 
-              <td class="text-nowrap"> {{ formatDate(row.booking_date) }} </td>
+        <span class="live-indicator"> <span></span> Datos de Supabase </span>
+      </div>
 
-              <td class="text-nowrap">  {{ hhmm(row.start_time) }}–{{ hhmm(row.end_time) }} </td>
+      <div class="table-responsive">
+        <table class="table booking-table align-middle mb-0">
 
-              <td class="customer-cell">
-                <strong>{{ row.customer_name }}</strong>
-
-                <a class="phone-link" [href]="whatsappLink(row.customer_phone)" target="_blank" rel="noopener">
-                  {{ row.customer_phone }}
-                </a>
-
-                @if (row.notes) {
-                  <small class="customer-notes"> {{ row.notes }} </small>
-                }
-              </td>
-
-              <td> {{ row.services?.name || '—' }}</td>
-
-              <td>
-                <span class="status-badge" [attr.data-status]="row.status" > {{ statusLabel[row.status] }} </span>
-              </td>
-
-              <td>
-                <div class="d-flex flex-wrap gap-2 booking-actions">
-                  @if (row.status === 'pending') {
-                    <button type="button" class="btn btn-sm action-confirm" (click)="setStatus(row, 'confirmed')"> Confirmar </button>
-                  }
-                  @if (row.status === 'confirmed') {
-                    <button type="button" class="btn btn-sm action-confirm" (click)="setStatus(row, 'completed')"> Completar </button>
-                  }
-                  @if (row.status === 'pending' || row.status === 'confirmed') {
-                    <button type="button" class="btn btn-sm action-cancel" (click)="setStatus(row, 'cancelled')"> Cancelar </button>
-                  }
-                  @if (row.status === 'cancelled') {
-                    <button type="button" class="btn btn-sm action-reopen" (click)="setStatus(row, 'pending')"> Reabrir </button>
-                  }
-                </div>
-              </td>
-
-            </tr>
-          } @empty {
+          <thead>
             <tr>
-              <td colspan="6" class="empty-state">
-                No hay turnos con estos filtros.
-              </td>
+              <th scope="col">Fecha</th> <th scope="col">Horario</th> 
+              <th scope="col">Cliente</th> <th scope="col">Servicio</th> 
+              <th scope="col">Estado</th> <th scope="col" class="text-end">Acciones</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            @for (row of visible(); track row.id) {
+              <tr [class.row-busy]="busyId() === row.id" [class.pe-none]="busyId() === row.id">
+
+                <td class="text-nowrap">
+                  <span class="date-value"> <i class="bi bi-calendar3"></i> {{ formatDate(row.booking_date) }} </span>
+                </td>
+
+                <td class="text-nowrap">
+                  <span class="time-value">
+                    <i class="bi bi-clock"></i> {{ hhmm(row.start_time) }}–{{ hhmm(row.end_time) }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="customer-name"> {{ row.customer_name }} </div>
+                  <a class="customer-phone" [href]="whatsappLink(row.customer_phone)" target="_blank" rel="noopener">
+                    <i class="bi bi-whatsapp"></i>{{ row.customer_phone }}
+                  </a>
+
+                  @if (row.notes) {
+                    <small class="customer-notes d-block mt-1"> {{ row.notes }} </small>
+                  }
+                </td>
+
+                <td>
+                  <span class="service-name">{{ row.services?.name || '—' }} </span>
+                </td>
+
+                <td>
+                  <span class="booking-status"  [class.status-pending]="row.status === 'pending'"  
+                  [class.status-confirmed]="row.status === 'confirmed'"  [class.status-completed]="row.status === 'completed'"  
+                  [class.status-cancelled]="row.status === 'cancelled'">
+                    <span class="status-dot"></span> {{ statusLabel[row.status] }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="d-flex flex-wrap justify-content-end gap-2">
+                    @if (row.status === 'pending') {
+                      <button type="button" class="btn action-btn action-confirm" (click)="setStatus(row, 'confirmed')">
+                        <i class="bi bi-check2"></i> Confirmar
+                      </button>
+                    }
+                    @if (row.status === 'confirmed') {
+                      <button type="button" class="btn action-btn action-confirm" (click)="setStatus(row, 'completed')">
+                        <i class="bi bi-check2-all"></i> Completar
+                      </button>
+                    }
+                    @if (row.status === 'pending' || row.status === 'confirmed') {
+                      <button type="button" class="btn action-btn action-cancel" (click)="setStatus(row, 'cancelled')">
+                        <i class="bi bi-x-lg"></i> Cancelar
+                      </button>
+                    }
+                    @if (row.status === 'cancelled') {
+                      <button type="button" class="btn action-btn action-reopen" (click)="setStatus(row, 'pending')">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reabrir
+                      </button>
+                    }
+                  </div>
+                </td>
+
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <i class="bi bi-calendar2-x"></i>
+                    <h3>No hay reservas para mostrar</h3> <p>Modificá los filtros o la búsqueda para ver otros turnos.</p>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+
+        </table>
+      </div>
+
     </div>
   }
-
 </div>
