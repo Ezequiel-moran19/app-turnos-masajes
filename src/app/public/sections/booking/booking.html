@@ -18,9 +18,7 @@
 
               @if (store.loading()) {
                 <div class="col-12">
-                  <p class="text-secondary small mb-0">
-                    Cargando días disponibles...
-                  </p>
+                  <p class="text-secondary small mb-0"> Cargando días disponibles... </p>
                 </div>
               } @else {
                 @for (d of store.dayOptions(); track d.key) {
@@ -40,11 +38,8 @@
           </div>
 
           <div class="step" role="group" aria-labelledby="lbl-time">
-
             <span class="form-label sl mb-0" id="lbl-time"> Horario </span>
-
             <div class="row times row-cols-3 row-cols-sm-4 row-cols-md-5 row-cols-xl-6 g-2">
-
               @for (t of store.slots(); track t) {
                 <div class="col">
                   <button type="button" class="opt w-100" [attr.aria-pressed]="t === store.selectedTime()" (click)="store.pickTime(t)" >
@@ -52,7 +47,6 @@
                   </button>
                 </div>
               }
-
             </div>
 
             @if (!store.selectedDate()) {
@@ -99,9 +93,7 @@
 
               <div>
                 <dt>Horario</dt>
-                <dd>
-                  {{ store.selectedTime() ? store.selectedTime() + ' hs' : '—' }}
-                </dd>
+                <dd> {{ store.selectedTime() ? store.selectedTime() + ' hs' : '—' }} </dd>
               </div>
 
               <div class="tot">
@@ -129,22 +121,15 @@
                 @if (c.href) {
                   <a class="chan d-flex align-items-center gap-3" [href]="c.href" target="_blank" rel="noopener">
                     <i [class]="'bi bi-' + c.icon" aria-hidden="true" ></i>
-
-                    <div>
-                      <b>{{ c.name }}</b> <small>{{ c.value }}</small>
-                    </div>
+                    <div> <b>{{ c.name }}</b> <small>{{ c.value }}</small> </div>
                   </a>
                 } @else {
                   <div class="chan d-flex align-items-center gap-3">
                     <i [class]="'bi bi-' + c.icon" aria-hidden="true"></i>
-
-                    <div>
-                      <b>{{ c.name }}</b> <small>{{ c.value }}</small>
-                    </div>
+                    <div> <b>{{ c.name }}</b> <small>{{ c.value }}</small> </div>
                   </div>
                 }
               }
-
             </div>
 
           </div>

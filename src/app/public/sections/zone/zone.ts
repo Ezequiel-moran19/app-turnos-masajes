@@ -22,10 +22,7 @@ export class ZoneSection {
 
   constructor() {
     afterNextRender(() => void this.initMap());
-    inject(DestroyRef).onDestroy(() => {
-      this.destroyed = true;
-      this.map?.remove();
-    });
+    inject(DestroyRef).onDestroy(() => { this.destroyed = true; this.map?.remove(); });
   }
 
   private async initMap(): Promise<void> {
@@ -60,7 +57,6 @@ export class ZoneSection {
       this.map = map;
       this.live.set(true);
     } catch {
-      // Sin conexión o sin Leaflet: se mantiene el mapa esquemático.
     }
   }
 }

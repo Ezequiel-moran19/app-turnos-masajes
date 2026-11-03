@@ -1,171 +1,130 @@
-<div class="container-fluid py-4">
+<div class="page container-fluid py-4" data-bs-theme="dark">
 
-  <header class="mb-4">
-    <p class="text-uppercase fw-bold small text-success mb-2">Administración</p>
-    <h1 class="h2 fw-bold mb-2">Horarios</h1>
-    <p class="text-secondary mb-0"> Definí tu semana tipo y excepciones para fechas puntuales. </p>
+  <header class="d-flex align-items-start gap-3 mb-4">
+    <span class="icon-bubble"> <i class="bi bi-calendar-week"></i> </span>
+
+    <div>
+      <p class="eyebrow mb-1">Administración</p>
+      <h1 class="h2 fw-bold mb-1">Horarios</h1>
+      <p class="muted mb-0"> Configurá los días y horarios disponibles para reservar turnos. </p>
+    </div>
   </header>
 
   @if (error()) {
-    <div class="alert alert-danger" role="alert">{{ error() }}</div>
+    <div class="alert alert-danger d-flex align-items-start gap-2" role="alert">
+      <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+      <div class="flex-grow-1"> {{ error() }} </div>
+      <button type="button" class="btn-close" aria-label="Cerrar" (click)="error.set('')"> </button>
+    </div>
   }
 
   @if (message()) {
-    <div class="alert alert-success" role="status">{{ message() }}</div>
+    <div class="alert alert-success d-flex align-items-start gap-2" role="status">
+      <i class="bi bi-check-circle-fill mt-1"></i>
+      <div class="flex-grow-1"> {{ message() }} </div>
+      <button type="button" class="btn-close" aria-label="Cerrar" (click)="message.set('')"> </button>
+    </div>
   }
 
-  <!-- Semana tipo -->
-  <section class="card border-0 shadow-sm mb-4">
+  <section class="card">
     <div class="card-body p-3 p-md-4">
 
-      <h2 class="h5 fw-bold mb-2">1. Semana tipo</h2>
-      <p class="text-secondary small mb-3">
-        Se repite todas las semanas. Los días sin habilitar no ofrecen turnos.
-      </p>
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <span class="icon-bubble"> <i class="bi bi-arrow-repeat"></i> </span>
+        <div>
+          <h2 class="h5 fw-bold mb-0">Semana tipo</h2>
+          <p class="muted small mb-0"> Se repite todas las semanas. Los días deshabilitados no ofrecen turnos. </p>
+        </div>
+      </div>
 
-      <div class="bg-light rounded-3 p-3 mb-4">
+      <!-- Generador de horarios -->
+      <div class="panel mb-4">
+        <h3 class="h6 fw-semibold mb-3"> <i class="bi bi-sliders me-2"></i> Generador de horarios </h3>
         <div class="row g-3 align-items-end">
 
           <div class="col-6 col-md-3">
-            <label for="genStart" class="form-label">Desde</label>
-            <input id="genStart" type="time" name="genStart" class="form-control" [(ngModel)]="genStart" />
+            <label for="genStart" class="form-label"> Desde </label>
+            <div class="input-group">
+              <span class="input-group-text"> <i class="bi bi-sunrise"></i> </span>
+              <input id="genStart" type="time" name="genStart" class="form-control" [(ngModel)]="genStart" />
+            </div>
           </div>
 
           <div class="col-6 col-md-3">
-            <label for="genEnd" class="form-label">Hasta</label>
-            <input id="genEnd" type="time" name="genEnd" class="form-control" [(ngModel)]="genEnd" />
+            <label for="genEnd" class="form-label"> Hasta </label>
+            <div class="input-group">
+              <span class="input-group-text"> <i class="bi bi-sunset"></i> </span>
+              <input id="genEnd" type="time" name="genEnd" class="form-control" [(ngModel)]="genEnd" />
+            </div>
           </div>
 
-          <div class="col-6 col-md-2">
-            <label for="genStep" class="form-label">Cada (min)</label>
-            <input id="genStep" type="number" name="genStep" min="5" step="5" class="form-control" [(ngModel)]="genStep" />
+          <div class="col-12 col-md-2">
+            <label for="genStep" class="form-label"> Cada </label>
+            <div class="input-group">
+              <span class="input-group-text"> <i class="bi bi-stopwatch"></i> </span>
+              <input id="genStep" type="number" name="genStep" min="5" step="5" class="form-control" [(ngModel)]="genStep" />
+              <span class="input-group-text"> min </span>
+            </div>
           </div>
 
           <div class="col-12 col-md-4">
-            <button type="button" class="btn btn-outline-secondary w-100" (click)="applyToWorkdays()"> Aplicar a lunes–sábado </button>
+            <button type="button" class="btn btn-outline-secondary w-100" (click)="applyToWorkdays()">
+              <i class="bi bi-calendar-check"></i> Aplicar a lunes–sábado
+            </button>
           </div>
 
         </div>
       </div>
 
+      <!-- Configuración de los siete días -->
       @for (day of days(); track day.weekday) {
-        <div class="row g-3 align-items-center border-top py-3">
-
-          <div class="col-6 col-md-2"> <strong>{{ dayNames[day.weekday] }}</strong> </div>
-
-          <div class="col-6 col-md-2">
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" [id]="'enabled-' + day.weekday" [ngModel]="day.enabled" (ngModelChange)="setEnabled(day.weekday, $event)" />
-              <label class="form-check-label" [for]="'enabled-' + day.weekday"> Habilitado
-              </label>
+        <div class="day-row py-3" [class.is-off]="!day.enabled">
+          <div class="row g-2 g-md-3 align-items-center">
+            <div class="col-7 col-md-2">
+              <strong class="day-name"> {{ dayNames[day.weekday] }} </strong>
             </div>
-          </div>
+            <div class="col-5 col-md-2">
+              <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" role="switch"
+                  [id]="'enabled-' + day.weekday" [ngModel]="day.enabled" (ngModelChange)="setEnabled(day.weekday, $event)" />
+                <label class="form-check-label" [for]="'enabled-' + day.weekday"> {{ day.enabled ? 'Habilitado' : 'Cerrado' }} </label>
+              </div>
+            </div>
 
-          <div class="col-12 col-md">
-            <input class="form-control" [(ngModel)]="slotsText[day.weekday]" [name]="'slots-' + day.weekday" [disabled]="!day.enabled" placeholder="09:00, 10:00, 11:00" />
-          </div>
+            <div class="col-12 col-md">
+              <div class="input-group">
+                <span class="input-group-text"> <i class="bi bi-clock"></i> </span>
+                <input class="form-control slots-input" [(ngModel)]="slotsText[day.weekday]" [name]="'slots-' + day.weekday"
+                  [attr.aria-label]="'Horarios de ' + dayNames[day.weekday]" [disabled]="!day.enabled" placeholder="09:00, 10:00, 11:00" />
+              </div>
+            </div>
 
-          <div class="col-6 col-md-auto">
-            <button type="button" class="btn btn-outline-secondary btn-sm w-100" (click)="fillDay(day.weekday)" [disabled]="!day.enabled"> Autocompletar </button>
-          </div>
+            <div class="col-12 col-md-auto d-flex gap-2">
+              <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" (click)="fillDay(day.weekday)" [disabled]="!day.enabled">
+                <i class="bi bi-magic"></i> Autocompletar
+              </button>
+              <button type="button" class="btn btn-primary btn-sm flex-fill" (click)="saveDay(day)" [disabled]="saving()">
+                <i class="bi bi-floppy"></i> Guardar
+              </button>
+            </div>
 
-          <div class="col-6 col-md-auto">
-            <button type="button" class="btn btn-primary btn-sm w-100" (click)="saveDay(day)" [disabled]="saving()"> Guardar </button>
           </div>
-
         </div>
+
       }
 
-      <div class="d-flex justify-content-end border-top pt-3 mt-2">
-        <button type="button" class="btn btn-primary"
-          (click)="saveAll()" [disabled]="saving()">
+      <!-- Acciones generales -->
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 section-foot pt-3">
+        <span class="muted small"> <i class="bi bi-info-circle me-1"></i> Formato HH:mm separado por comas. </span>
+        <button type="button" class="btn btn-primary" (click)="saveAll()" [disabled]="saving()">
           @if (saving()) {
-            <span class="spinner-border spinner-border-sm me-2"></span>
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"> </span>
             Guardando...
           } @else {
-            Guardar toda la semana
+            <i class="bi bi-floppy2-fill"></i> Guardar toda la semana
           }
         </button>
       </div>
-
-    </div>
-  </section>
-
-  <!-- Excepciones -->
-  <section class="card border-0 shadow-sm">
-    <div class="card-body p-3 p-md-4">
-
-      <h2 class="h5 fw-bold mb-2">2. Excepciones por fecha</h2>
-      <p class="text-secondary small mb-3"> Modifican la semana tipo solamente para una fecha puntual. Podés cerrar un día o establecer horarios diferentes. </p>
-
-      <div class="bg-light rounded-3 p-3 mb-4">
-        <div class="row g-3 align-items-end">
-
-          <div class="col-12 col-md-4">
-            <label for="exceptionDate" class="form-label">Fecha</label>
-            <input id="exceptionDate" type="date" name="exceptionDate" class="form-control" [(ngModel)]="exceptionDate" />
-          </div>
-
-          <div class="col-12 col-md-4">
-            <label class="form-label d-block">Disponibilidad</label>
-            <div class="form-check form-switch">
-              <input id="exceptionClosed" type="checkbox" class="form-check-input" name="exceptionClosed" [(ngModel)]="exceptionClosed" />
-              <label class="form-check-label" for="exceptionClosed"> Día cerrado </label>
-            </div>
-          </div>
-
-          <div class="col-12 col-md-4">
-            <label for="exceptionSlots" class="form-label">Horarios</label>
-            <input id="exceptionSlots" name="exceptionSlots" class="form-control" [(ngModel)]="exceptionSlots" [disabled]="exceptionClosed" placeholder="09:00, 12:00, 15:00" />
-          </div>
-
-          <div class="col-12 col-md-4">
-            <button type="button" class="btn btn-outline-secondary w-100" (click)="useRangeInException()" [disabled]="exceptionClosed"> Usar rango de arriba
-            </button>
-          </div>
-
-          <div class="col-12 col-md-4">
-            <label for="exceptionNote" class="form-label">Nota (opcional)</label>
-            <input id="exceptionNote" name="exceptionNote" class="form-control" [(ngModel)]="exceptionNote" placeholder="Motivo de la excepción" />
-          </div>
-
-          <div class="col-12 col-md-4">
-            <button type="button" class="btn btn-primary w-100" (click)="addException()"> Guardar excepción
-            </button>
-          </div>
-
-        </div>
-      </div>
-
-      @for (row of exceptions(); track row.id) {
-        <div class="d-flex flex-column flex-md-row justify-content-between
-                    align-items-md-center gap-3 border-bottom py-3">
-
-          <div>
-            <strong>{{ formatDate(row.exception_date) }}</strong>
-
-            <div class="small text-secondary mt-1">
-              @if (row.closed) {
-                <span class="badge text-bg-danger">Cerrado</span>
-              } @else {
-                <span class="badge text-bg-success">Habilitado</span>
-                <span class="ms-2">{{ row.slots.join(', ') }}</span>
-              }
-
-              @if (row.note) {
-                <span class="ms-2">{{ row.note }}</span>
-              }
-            </div>
-          </div>
-
-          <button type="button" class="btn btn-outline-danger btn-sm"
-            (click)="removeException(row)"> Eliminar
-          </button>
-
-        </div>
-      } @empty {
-        <p class="text-secondary text-center py-4 mb-0">  No hay excepciones cargadas. </p>
-      }
 
     </div>
   </section>

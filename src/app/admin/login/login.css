@@ -1,19 +1,10 @@
 
-:host {
-  display: block;
-  min-height: 100vh;
-  color-scheme: dark;
-}
+:host { display: block; min-height: 100vh; color-scheme: dark; }
 
 .login-page {
   min-height: 100vh;
-  background:
-    radial-gradient(
-      circle at 50% 0%,
-      rgba(14, 176, 164, .15),
-      transparent 45%
-    ),
-    linear-gradient(145deg, #071c20 0%, #0b2f36 55%, #102c31 100%);
+  background: radial-gradient(circle at 50% 0%, rgba(14, 176, 164, .15), 
+  transparent 45%), linear-gradient(145deg, #071c20 0%, #0b2f36 55%, #102c31 100%);
 }
 
 .login-card {
@@ -25,9 +16,7 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, .35) !important;
 }
 
-.login-card .card-body {
-  background: transparent;
-}
+.login-card .card-body { background: transparent; }
 
 .login-icon {
   width: 64px;

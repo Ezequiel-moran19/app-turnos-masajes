@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, ElementRef, inject, signal } from '@angular/core';
-
 import { BookingStore } from '../../../core/booking.store';
 import { MissingField } from '../../../core/models';
 import { CONTACTS } from '../../../core/site.config';
@@ -65,13 +64,7 @@ export class BookingSection {
 
   private focusField(field: MissingField): void {
     const selector =
-      field === 'date'
-        ? '.days .opt'
-        : field === 'time'
-          ? '.times .opt'
-          : field === 'name'
-            ? '#fName'
-            : '#fPhone';
+      field === 'date' ? '.days .opt' : field === 'time' ? '.times .opt' : field === 'name' ? '#fName' : '#fPhone';
 
     this.host.querySelector<HTMLElement>(selector)?.focus();
   }

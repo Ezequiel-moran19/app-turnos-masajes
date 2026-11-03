@@ -49,11 +49,7 @@ export class MyBooking implements OnInit {
 
       this.booking.set(booking);
     } catch (error) {
-      this.error.set(
-        error instanceof Error
-          ? error.message
-          : 'No se pudo consultar el turno.',
-      );
+      this.error.set(error instanceof Error ? error.message : 'No se pudo consultar el turno.');
     } finally {
       this.loading.set(false);
     }
@@ -62,17 +58,11 @@ export class MyBooking implements OnInit {
   async cancel(): Promise<void> {
     const booking = this.booking();
 
-    if (
-      !booking ||
-      !['pending', 'confirmed'].includes(booking.status) ||
-      this.cancelling()
-    ) {
+    if (!booking || !['pending', 'confirmed'].includes(booking.status) || this.cancelling()) {
       return;
     }
 
-    const confirmed = window.confirm(
-      '¿Querés cancelar este turno? Esta acción no se puede deshacer desde esta página.',
-    );
+    const confirmed = window.confirm('¿Querés cancelar este turno? Esta acción no se puede deshacer desde esta página.');
 
     if (!confirmed) return;
 
@@ -85,35 +75,22 @@ export class MyBooking implements OnInit {
 
       if (!cancelled) {
         await this.load();
-        this.message.set(
-          'El turno ya no se puede cancelar. Actualizamos su estado.',
-        );
+        this.message.set('El turno ya no se puede cancelar. Actualizamos su estado.');
         return;
       }
 
-      this.booking.update((current) =>
-        current ? { ...current, status: 'cancelled' } : null,
-      );
+      this.booking.update((current) => current ? { ...current, status: 'cancelled' } : null);
 
       this.message.set('El turno fue cancelado correctamente.');
     } catch (error) {
-      this.error.set(
-        error instanceof Error
-          ? error.message
-          : 'No se pudo cancelar el turno.',
-      );
+      this.error.set(error instanceof Error ? error.message : 'No se pudo cancelar el turno.');
     } finally {
       this.cancelling.set(false);
     }
   }
 
   formatDate(date: string): string {
-    return new Date(`${date}T00:00:00`).toLocaleDateString('es-AR', {
-      weekday: 'long',
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    });
+    return new Date(`${date}T00:00:00`).toLocaleDateString('es-AR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
   }
 
   formatTime(time: string): string {

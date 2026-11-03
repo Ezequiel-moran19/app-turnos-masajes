@@ -1,20 +1,40 @@
-<div class="treatments-page container-fluid py-4">
+<div class="container-fluid py-4 treatments-page" data-bs-theme="dark">
 
-  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-    <div>
-      <h1 class="h3 fw-bold mb-1">Tratamientos</h1>
-      <p class="text-secondary mb-0"> Administrá los tratamientos que se muestran en la página pública. </p>
+  <!-- Encabezado -->
+  <header class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <span class="treatment-icon">
+        <i class="bi bi-flower1"></i>
+      </span>
+
+      <div>
+        <p class="section-label mb-1">PANEL DE ADMINISTRACIÓN</p>
+        <h1 class="h3 fw-bold mb-1 treatments-title">Tratamientos</h1>
+        <p class="header-description mb-0">
+          Administrá los tratamientos que se muestran en la página pública.
+        </p>
+      </div>
     </div>
 
-    <span class="badge text-bg-primary fs-6">
-      {{ rows().length }} tratamientos
-    </span>
-  </div>
+    <div class="total-counter">
+      <i class="bi bi-collection"></i>
+      <span>{{ rows().length }}</span>
+      {{ rows().length === 1 ? 'tratamiento' : 'tratamientos' }}
+    </div>
+  </header>
 
+  <!-- Mensajes -->
   @if (error()) {
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      {{ error() }}
-      <button type="button" class="btn-close" aria-label="Cerrar" (click)="error.set('')" ></button>
+    <div class="alert treatments-alert d-flex align-items-center gap-2 mb-4" role="alert">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span class="flex-grow-1">{{ error() }}</span>
+
+      <button
+        type="button"
+        class="btn-close btn-close-white"
+        aria-label="Cerrar"
+        (click)="error.set('')">
+      </button>
     </div>
   }
 
@@ -22,55 +42,172 @@
 
     <!-- Formulario -->
     <div class="col-12 col-xl-5">
-      <section class="card border-0 shadow-sm h-100">
+      <section class="treatment-panel h-100">
 
-        <div class="card-header bg-white border-bottom py-3">
-          <h2 class="h5 fw-bold mb-0">
-            {{ editingId() ? 'Editar tratamiento' : 'Nuevo tratamiento' }}
-          </h2>
+        <div class="panel-heading">
+          <div class="d-flex align-items-center gap-2">
+            <span class="panel-icon">
+              <i
+                class="bi"
+                [class.bi-pencil-square]="editingId()"
+                [class.bi-plus-circle]="!editingId()">
+              </i>
+            </span>
+
+            <div>
+              <h2 class="panel-title mb-0">
+                {{ editingId() ? 'Editar tratamiento' : 'Nuevo tratamiento' }}
+              </h2>
+              <p class="panel-subtitle mb-0">
+                {{ editingId() ? 'Modificá los datos existentes.' : 'Completá la información del tratamiento.' }}
+              </p>
+            </div>
+          </div>
+
+          @if (editingId()) {
+            <span class="editing-label">
+              <i class="bi bi-pencil me-1"></i>
+              Editando
+            </span>
+          }
         </div>
 
-        <div class="card-body">
+        <div class="panel-body">
           <form (ngSubmit)="save()">
 
             <div class="mb-3">
-              <label for="name" class="form-label fw-semibold"> Nombre </label>
-              <input id="name" name="name" type="text" class="form-control" [(ngModel)]="name" placeholder="Ej: Masaje descontracturante" required />
+              <label for="name" class="form-label">
+                Nombre <span class="required-mark">*</span>
+              </label>
+
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-tag"></i>
+                </span>
+
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="name"
+                  placeholder="Ej: Masaje descontracturante"
+                  required>
+              </div>
             </div>
 
             <div class="mb-3">
-              <label for="description" class="form-label fw-semibold"> Descripción </label>
-              <textarea id="description" name="description" class="form-control" rows="4" [(ngModel)]="description" placeholder="Describí el tratamiento..." ></textarea>
+              <label for="description" class="form-label">
+                Descripción
+              </label>
+
+              <textarea
+                id="description"
+                name="description"
+                class="form-control"
+                rows="3"
+                [(ngModel)]="description"
+                placeholder="Describí el tratamiento...">
+              </textarea>
             </div>
 
             <div class="mb-3">
-              <label for="benefits" class="form-label fw-semibold"> Beneficios </label>
-              <textarea id="benefits" name="benefits" class="form-control" rows="4" [(ngModel)]="benefitsText" placeholder="Un beneficio por línea" ></textarea>
-              <div class="form-text"> Escribí cada beneficio en una línea diferente. </div>
+              <label for="benefits" class="form-label">
+                Beneficios
+              </label>
+
+              <textarea
+                id="benefits"
+                name="benefits"
+                class="form-control"
+                rows="3"
+                [(ngModel)]="benefitsText"
+                placeholder="Un beneficio por línea">
+              </textarea>
+
+              <div class="form-hint">
+                <i class="bi bi-info-circle"></i>
+                Ingresá un beneficio por línea.
+              </div>
             </div>
 
             <div class="mb-3">
-              <label for="image" class="form-label fw-semibold"> Ruta de imagen </label>
-              <input id="image" name="image" type="text" class="form-control" [(ngModel)]="image" placeholder="/cards/Ventosa.jpg" />
+              <label for="image" class="form-label">
+                Ruta de imagen
+              </label>
+
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-image"></i>
+                </span>
+
+                <input
+                  id="image"
+                  name="image"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="image"
+                  placeholder="/cards/Ventosa.jpg">
+              </div>
             </div>
 
-            <div class="form-check form-switch mb-4">
-              <input id="active" name="active" type="checkbox" class="form-check-input" role="switch" [(ngModel)]="active" />
-              <label for="active" class="form-check-label"> Activo y visible en la página pública </label>
+            <!-- Visibilidad -->
+            <div class="visibility-control mb-4">
+              <div>
+                <span class="visibility-title">Visibilidad pública</span>
+                <p class="visibility-description mb-0">
+                  {{ active ? 'El tratamiento estará visible en la web.' : 'El tratamiento estará oculto en la web.' }}
+                </p>
+              </div>
+
+              <div class="form-check form-switch mb-0">
+                <input
+                  id="active"
+                  name="active"
+                  type="checkbox"
+                  class="form-check-input"
+                  role="switch"
+                  [(ngModel)]="active">
+
+                <label for="active" class="visually-hidden">
+                  Activar tratamiento
+                </label>
+              </div>
             </div>
 
-            <div class="d-flex flex-wrap gap-2">
-              <button type="submit" class="btn btn-primary" [disabled]="saving()" >
+            <!-- Acciones -->
+            <div class="d-flex flex-wrap gap-2 form-actions">
+              <button
+                type="submit"
+                class="btn btn-save"
+                [disabled]="saving()">
+
                 @if (saving()) {
-                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                   Guardando...
                 } @else {
+                  <i
+                    class="bi"
+                    [class.bi-check-lg]="editingId()"
+                    [class.bi-floppy]="!editingId()">
+                  </i>
                   {{ editingId() ? 'Actualizar tratamiento' : 'Guardar tratamiento' }}
                 }
               </button>
 
-              <button type="button" class="btn btn-outline-secondary" (click)="reset()" >
-                Limpiar
+              <button
+                type="button"
+                class="btn btn-reset"
+                [disabled]="saving()"
+                (click)="reset()">
+
+                <i
+                  class="bi"
+                  [class.bi-x-lg]="editingId()"
+                  [class.bi-eraser]="!editingId()">
+                </i>
+
+                {{ editingId() ? 'Cancelar edición' : 'Limpiar' }}
               </button>
             </div>
 
@@ -81,72 +218,148 @@
 
     <!-- Listado -->
     <div class="col-12 col-xl-7">
-      <section class="card border-0 shadow-sm">
+      <section class="treatment-panel">
 
-        <div class="card-header bg-white border-bottom py-3">
-          <h2 class="h5 fw-bold mb-0">
-            Tratamientos cargados
-          </h2>
+        <div class="panel-heading">
+          <div class="d-flex align-items-center gap-2">
+            <span class="panel-icon">
+              <i class="bi bi-list-ul"></i>
+            </span>
+
+            <div>
+              <h2 class="panel-title mb-0">Tratamientos cargados</h2>
+              <p class="panel-subtitle mb-0">
+                Gestioná el contenido disponible en la página pública.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-refresh"
+            [disabled]="loading()"
+            (click)="load()">
+
+            <i class="bi bi-arrow-clockwise" [class.spin]="loading()"></i>
+            Actualizar
+          </button>
         </div>
 
-        <div class="card-body">
+        <div class="panel-body">
 
           @if (loading()) {
-            <div class="text-center py-5">
-              <div class="spinner-border text-primary" role="status"></div>
-              <p class="text-secondary mt-3 mb-0">
-                Cargando tratamientos...
-              </p>
+            <div class="empty-state">
+              <span class="spinner-border spinner-border-sm" role="status"></span>
+              <p class="mb-0 mt-3">Cargando tratamientos...</p>
             </div>
+
           } @else if (rows().length === 0) {
-            <div class="text-center py-5">
-              <p class="text-secondary mb-0">
-                No hay tratamientos cargados.
-              </p>
+            <div class="empty-state">
+              <i class="bi bi-inbox"></i>
+              <h3>No hay tratamientos</h3>
+              <p>Los tratamientos que agregues aparecerán en este listado.</p>
             </div>
+
           } @else {
 
-            <div class="d-flex flex-column gap-3">
+            <div class="treatment-list">
 
               @for (row of rows(); track row.id) {
-                <article class="treatment-item border rounded-3 p-3">
+                <article
+                  class="treatment-item"
+                  [class.is-editing]="editingId() === row.id"
+                  [class.is-inactive]="!row.active">
 
-                  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+                  <div class="d-flex flex-column flex-sm-row gap-3">
 
-                    <div class="flex-grow-1">
+                    <!-- Imagen -->
+                    <div class="image-wrapper">
+                      @if (row.image_url) {
+                        <img
+                          [src]="row.image_url"
+                          [alt]="row.name"
+                          width="84"
+                          height="84"
+                          class="treatment-image"
+                          (error)="$any($event.target).classList.add('d-none')"
+                          (load)="$any($event.target).classList.remove('d-none')">
+                      } @else {
+                        <div class="image-placeholder">
+                          <i class="bi bi-image"></i>
+                        </div>
+                      }
+                    </div>
+
+                    <!-- Información -->
+                    <div class="treatment-content flex-grow-1">
+
                       <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                        <h3 class="h6 fw-bold mb-0">
+                        <h3 class="treatment-name mb-0">
                           {{ row.name }}
                         </h3>
 
                         @if (row.active) {
-                          <span class="badge text-bg-success">Activo</span>
+                          <span class="status-pill status-active">
+                            <span class="status-dot"></span>
+                            Activo
+                          </span>
                         } @else {
-                          <span class="badge text-bg-secondary">Inactivo</span>
+                          <span class="status-pill status-inactive">
+                            <span class="status-dot"></span>
+                            Inactivo
+                          </span>
                         }
                       </div>
 
-                      <p class="text-secondary mb-2">
+                      <p class="treatment-description">
                         {{ row.description || 'Sin descripción.' }}
                       </p>
 
                       @if (row.benefits.length > 0) {
-                        <ul class="small text-secondary mb-0 ps-3">
-                          @for (benefit of row.benefits; track benefit) {
-                            <li>{{ benefit }}</li>
-                          }
-                        </ul>
+                        <div class="benefits-list">
+                          <span class="benefits-title">Beneficios</span>
+
+                          <ul>
+                            @for (benefit of row.benefits; track benefit) {
+                              <li>
+                                <i class="bi bi-check2"></i>
+                                <span>{{ benefit }}</span>
+                              </li>
+                            }
+                          </ul>
+                        </div>
                       }
+
                     </div>
 
-                    <div class="d-flex flex-wrap gap-2 treatment-actions">
-                      <button type="button" class="btn btn-sm btn-outline-primary" (click)="edit(row)" >
+                    <!-- Acciones -->
+                    <div class="treatment-actions">
+
+                      <button
+                        type="button"
+                        class="btn btn-edit"
+                        (click)="edit(row)">
+
+                        <i class="bi bi-pencil"></i>
                         Editar
                       </button>
 
-                      <button type="button" class="btn btn-sm" [class.btn-outline-danger]="row.active" [class.btn-outline-success]="!row.active" (click)="toggleActive(row)" >
+                      <button
+                        type="button"
+                        class="btn"
+                        [class.btn-deactivate]="row.active"
+                        [class.btn-activate]="!row.active"
+                        (click)="toggleActive(row)">
+
+                        <i
+                          class="bi"
+                          [class.bi-eye-slash]="row.active"
+                          [class.bi-eye]="!row.active">
+                        </i>
+
                         {{ row.active ? 'Dar de baja' : 'Reactivar' }}
                       </button>
+
                     </div>
 
                   </div>

@@ -26,11 +26,8 @@
               }
 
               <div class="card-body d-flex flex-column gap-3">
-
                 <h3 class="card-title mb-0"> {{ t.name }} </h3>
-
                 <p class="card-text treatment-description mb-0"> {{ t.description }} </p>
-
                 @if (t.benefits.length > 0) {
                   <div class="benefits mt-auto">
                     <span class="benefits-label"> Qué buscamos lograr </span>
@@ -39,7 +36,6 @@
                         <li>{{ b }}</li>
                       }
                     </ul>
-
                   </div>
                 }
 
@@ -47,9 +43,7 @@
             </article>
           </div>
         }
-
       </div>
     }
-
   </div>
 </section>
