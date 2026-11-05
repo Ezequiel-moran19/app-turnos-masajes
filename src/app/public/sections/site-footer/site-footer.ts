@@ -15,7 +15,7 @@ export class SiteFooter {
 
   protected readonly links = [
     { href: '#inicio', label: 'Inicio' },
-    { href: '#servicios', label: 'Sesiones' },
+    { href: '#servicios', label: 'Tratamientos' },
     { href: '#contacto', label: 'Reservar' },
     { href: '#zona', label: 'Ubicación' },
   ];

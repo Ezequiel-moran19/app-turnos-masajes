@@ -10,7 +10,7 @@ export class SiteHeader {
   protected readonly open = signal(false);
   protected readonly links = [
     { href: '#inicio', label: 'Inicio' },
-    { href: '#servicios', label: 'Sesiones' },
+    { href: '#servicios', label: 'Tratamientos' },
     { href: '#contacto', label: 'Reservar' },
     { href: '#zona', label: 'Ubicación' },
   ];
