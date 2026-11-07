@@ -68,15 +68,17 @@ section { padding: 64px 0; }
   background: var(--card); border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
   box-shadow: var(--sh); display: flex; flex-direction: column;
 }
-
 /* Aparición al entrar en pantalla (directiva Reveal) */
 .rv { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; transition-delay: var(--d, 0s); }
 .rv.in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; scroll-behavior: auto; }
+  *:not(.zone-orb):not(.footer-orb):not(.booking-orb):not(.treatment-orb):not(.zone-glow):not(.footer-glow):not(.booking-glow):not(.treatments-glow) {
+    animation: none !important;
+    transition: none !important;
+  }
+  html { scroll-behavior: auto; }
   .rv { opacity: 1; transform: none; }
 }
-
 /* Etiqueta del mapa (Leaflet crea este nodo fuera de los componentes) */
 .leaflet-tooltip.zt {
   background: transparent; border: 0; box-shadow: none; color: #0a5a54;

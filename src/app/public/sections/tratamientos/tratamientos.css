@@ -1,104 +1,247 @@
 :host { display: block; }
+.treatments-section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-top: 100px !important;
+  padding-bottom: 110px !important;
+  background: linear-gradient( to bottom, #f7f4ee 0, #dce9e5 45px, #527a76 100px, #081f23 165px, #081f23 100% );
+}
+.treatments-background {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.treatment-orb {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+.treatment-orb--one {
+  width: 280px;
+  height: 280px;
+  top: 80px;
+  right: 12%;
+  background: radial-gradient( circle, rgba(14, 176, 164, 0.22), rgba(14, 176, 164, 0.04) 70%, transparent);
+  box-shadow: inset 0 0 60px rgba(14, 176, 164, 0.10);
+}
+.treatment-orb--two {
+  width: 220px;
+  height: 220px;
+  bottom: 55px;
+  left: 30%;
+  background: radial-gradient( circle, rgba(14, 176, 164, 0.18), transparent 70%);
+}
+.treatment-orb--three {
+  width: 250px;
+  height: 250px;
+  bottom: 200px;
+  right: 80%;
+  background: radial-gradient( circle, rgba(14, 176, 164, 0.22), rgba(14, 176, 164, 0.04) 70%, transparent);
+  box-shadow: inset 0 0 60px rgba(14, 176, 164, 0.10);
+}
+.treatments-glow {
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  top: 10%;
+  right: -15%;
+  border-radius: 50%;
+  background: radial-gradient( circle, rgba(14, 176, 164, 0.11), transparent 70%);
+  filter: blur(50px);
+  pointer-events: none;
+}
+.treatments-section .container { position: relative; z-index: 1; }
+.treatments-header { max-width: 760px; }
 
+.treatments-eyebrow {
+  color: #42d4c5;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
 .treatment-title {
-  width: fit-content;
-  max-width: 100%;
+  display: inline-block;
   color: #ffffff;
-  background: linear-gradient(90deg, #ffffff 0%, #0eb0a4 35%, #ffffff 65%, #0eb0a4 100%);
-  background-size: 300% 100%;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.045em;
+  background: linear-gradient( 105deg, #ffffff 0%, #b9fff5 25%, #35d6c7 50%, #ffffff 75%, #80eee3 100%);
+  background-size: 250% 100%;
   background-position: 0% 50%;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: gradientMove 5s ease-in-out infinite alternate;
+  animation: treatmentTitleGradient 8s ease-in-out infinite alternate;
 }
-
-@keyframes gradientMove {
+@keyframes treatmentTitleGradient {
   from { background-position: 0% 50%; }
   to { background-position: 100% 50%; }
 }
+.treatments-intro { max-width: 620px; color: rgba(255, 255, 255, 0.7); font-size: 1.05rem; line-height: 1.8; }
+.treatments-grid { perspective: 1400px; }
+.treatment-column { perspective: 1100px; }
 
 .treatment-card {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: var(--card);
-  color: var(--ink);
-  box-shadow: var(--sh);
-  animation: cardEntrance 0.7s ease both;
-  animation-delay: var(--delay, 0ms);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  background: linear-gradient( 145deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.035));
+  color: #ffffff;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  will-change: transform;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
 }
-
 .treatment-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.10);
+  border-color: rgba(14, 176, 164, 0.55);
+  box-shadow:
+    0 35px 75px rgba(0, 0, 0, 0.35),
+    0 0 35px rgba(14, 176, 164, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
-
-@keyframes cardEntrance {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+.card-light {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient( circle at var(--pointer-x) var(--pointer-y), rgba(57, 225, 209, 0.19), transparent 45%);
+  transition: opacity 0.35s ease;
 }
-
-.treatment-image { aspect-ratio: 4 / 3; overflow: hidden; background: var(--soft); }
-.treatment-image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-.treatment-card:hover .treatment-image img { transform: scale(1.04); }
-.treatment-card .card-body { padding: 20px; }
-.treatment-card .card-title { font-size: 1.15rem; }
-.treatment-description { color: var(--mut); font-size: 0.93rem; line-height: 1.6; }
+.treatment-card:hover .card-light {
+  opacity: 1;
+}
+.treatment-image {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  background: #123b3c;
+  transform: translateZ(24px);
+  transform-style: preserve-3d;
+}
+.treatment-image img {
+  display: block;
+  width: 100%;
+  height: 110%;
+  object-fit: cover;
+  object-position: center;
+  transform: translateZ(10px) scale(1.05);
+  will-change: transform;
+}
+.image-depth-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient( 180deg, rgba(0, 0, 0, 0.02) 40%, rgba(5, 25, 27, 0.55) 100%);
+}
+.treatment-card .card-body { position: relative; z-index: 2; padding: 23px; transform-style: preserve-3d; }
+.treatment-heading { transform: translateZ(35px); }
+.treatment-card .card-title { color: #ffffff; font-size: 1.2rem; font-weight: 700; line-height: 1.4; }
+.treatment-description { color: rgba(255, 255, 255, 0.72); font-size: 0.93rem; line-height: 1.7; transform: translateZ(22px); }
 
 .benefits {
   display: grid;
-  gap: 10px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: var(--soft);
+  gap: 13px;
+  padding: 17px;
+  border: 1px solid rgba(14, 176, 164, 0.2);
+  border-radius: 15px;
+  background: rgba(14, 176, 164, 0.10);
+  transform: translateZ(30px);
+  transform-style: preserve-3d;
 }
-
 .benefits-label {
-  color: var(--brand-ink);
-  font-size: 0.75rem;
+  color: #48d3c5;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-
-.benefits ul {
-  display: grid;
-  gap: 8px;
-}
-
+.benefits ul { display: grid; gap: 10px; }
 .benefits li {
   position: relative;
-  padding-left: 26px;
-  color: var(--ink);
-  font-size: 0.9rem;
-  line-height: 1.45;
+  padding-left: 25px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  line-height: 1.5;
 }
-
 .benefits li::before {
   content: "✓";
   position: absolute;
   top: 1px;
   left: 0;
   display: grid;
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   place-items: center;
   border-radius: 50%;
-  background: var(--brand);
-  color: var(--on-brand);
-  font-size: 0.7rem;
-  font-weight: 700;
+  background: #0eb0a4;
+  color: #062d2a;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+.treatments-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 30px 0;
+  color: rgba(255, 255, 255, 0.75);
+}
+.loading-indicator {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #0eb0a4;
+  border-radius: 50%;
+  animation: loadingSpin 0.8s linear infinite;
+}
+@keyframes loadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.treatments-empty { padding: 25px 0; color: rgba(255, 255, 255, 0.7); }
+
+@media (max-width: 991.98px) {
+  .treatments-section { padding-top: 65px !important; padding-bottom: 70px !important; }
+  .treatment-card { transform: none !important; }
+  .treatment-image { transform: none; }
+  .treatment-heading,
+  .treatment-description,
+  .benefits { transform: none; }
+  .card-light { display: none; }
+  .treatment-orb--one,
+  .treatment-orb--two { opacity: 0.85; }
+}
+
+@media (max-width: 767.98px) {
+  .treatments-intro { font-size: 0.96rem; }
+  .treatment-card .card-body { padding: 19px; }
+  .treatment-orb--one { width: 240px; height: 240px; right: 5%; }
+  .treatment-orb--two { width: 190px; height: 190px; left: 10%; }
+  .treatments-glow { width: 300px; height: 300px; }
+  .treatment-column {
+    perspective: 900px;
+    transform-style: preserve-3d;
+    transform-origin: center center;
+    will-change: transform, opacity; }
+  .treatment-image { will-change: clip-path; }
+  .treatment-image img { will-change: transform; backface-visibility: hidden; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .treatment-title,
-  .treatment-card { animation: none; }
-
-  .treatment-card,
-  .treatment-image img { transition: none; }
-
-  .treatment-card:hover,
-  .treatment-card:hover .treatment-image img { transform: none; }
+  .treatment-title { animation: none; }
+  .treatment-card { transition: none; }
+  .loading-indicator { animation-duration: 1.8s; }
 }
