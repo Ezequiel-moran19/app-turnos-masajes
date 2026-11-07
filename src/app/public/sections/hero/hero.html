@@ -1,38 +1,40 @@
-<section class="hero" id="inicio">
+<section class="hero" id="inicio" (pointermove)="onPointerMove($event)" (pointerleave)="onPointerLeave()">
+  <div class="hero-background" aria-hidden="true">
+    <div class="hero-orb hero-orb--one"></div>
+    <div class="hero-orb hero-orb--two"></div>
+    <div class="hero-glow"></div>
+  </div>
+
   <div class="container">
     <div class="row align-items-center g-4 g-lg-5">
-
       <div class="col-12 col-lg-7 hero-content">
-        <p class="eyebrow mb-2">Masajes y recuperación muscular</p>
-
-        <h1 class="hero-title"> Aliviá la tensión.<br> <span>Sentite mejor.</span> </h1>
-
-        <p class="lead mt-3">
-          Sesiones de masajes con atención personalizada, pensadas para quienes
-          entrenan y para quienes simplemente necesitan relajarse y cuidar su cuerpo.
-        </p>
-
-        <div class="d-flex flex-wrap gap-3 mt-4">
-          <a class="btn btn-brand" href="#contacto">Reservar turno</a>
+        <p class="eyebrow hero-eyebrow mb-2"> Masajes y recuperación muscular</p>
+        <h1 class="hero-title"> Aliviá la tensión. <br> <span>Sentite mejor.</span> </h1>
+        <p class="lead hero-description mt-3"> Sesiones de masajes con atención personalizada, pensadas para quienes entrenan y para quienes simplemente necesitan relajarse y cuidar su cuerpo. </p>
+        <div class="d-flex flex-wrap gap-3 mt-4 hero-actions">
+          <a class="btn btn-brand" href="#contacto"> Reservar turno <span aria-hidden="true">→</span> </a>
         </div>
-
-        <ul class="chips d-flex flex-wrap gap-2 mt-4 mb-0 p-0">
+        <ul class="chips hero-chips d-flex flex-wrap gap-2 mt-4 mb-0 p-0">
           <li>Atención personalizada</li>
           <li>Higiene y cuidado</li>
           <li>Lanús Oeste</li>
         </ul>
       </div>
 
+      <!-- Imagen 3D -->
       <div class="col-12 col-lg-5 hero-visual">
-        <div class="visual" role="img" aria-label="Imagen de masajes y bienestar">
-          <img class="hero-image" src="masajes.png" alt="Sesión de masaje y bienestar">
-            <div class="hero-badge">
-              <b>Masajes y recuperación muscular</b>
+        <div class="visual">
+          <div class="visual-glow" aria-hidden="true"></div>
+          <img class="hero-image" src="img-fondo.jpg" alt="Sesión de masaje y bienestar" loading="eager" >
+          <div class="visual-overlay"></div>
+          <div class="hero-badge">
+            <span class="badge-indicator"></span>
+            <div>
+              <b>Masajes y recuperación muscular</b> <small>Atención personalizada</small>
             </div>
           </div>
         </div>
-        
       </div>
     </div>
-  </section>
-  
+  </div>
+</section>

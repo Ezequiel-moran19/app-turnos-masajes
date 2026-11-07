@@ -15,8 +15,6 @@ export class ZoneSection {
   private readonly leaf = viewChild.required<ElementRef<HTMLDivElement>>('leaf');
   private map?: LeafletMap;
   private destroyed = false;
-
-  /** true cuando el mapa real cargó; mientras tanto se ve el mapa esquemático. */
   protected readonly live = signal(false);
   protected readonly label = SITE.zone.label;
 
@@ -27,7 +25,6 @@ export class ZoneSection {
 
   private async initMap(): Promise<void> {
     try {
-      // Leaflet se carga bajo demanda, en un chunk aparte.
       const mod = await import('leaflet');
       const L = ((mod as unknown as { default?: LeafletModule }).default ?? mod) as LeafletModule;
       if (this.destroyed) return;
@@ -40,14 +37,8 @@ export class ZoneSection {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }).addTo(map);
 
-      // Solo el círculo: no se agrega ningún marcador sobre la dirección.
       const circle = new L.Circle(center, {
-        radius: radiusMeters,
-        color: '#0EB0A4',
-        weight: 3,
-        dashArray: '6 6',
-        fillColor: '#0EB0A4',
-        fillOpacity: 0.22,
+        radius: radiusMeters, color: '#0EB0A4', weight: 3, dashArray: '6 6', fillColor: '#0EB0A4', fillOpacity: 0.22,
       }).addTo(map);
       circle.bindTooltip(label, { permanent: true, direction: 'center', className: 'zt' });
 

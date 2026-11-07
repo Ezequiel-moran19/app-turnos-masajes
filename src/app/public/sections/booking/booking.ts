@@ -55,7 +55,6 @@ export class BookingSection {
       this.store.reset();
     } catch (error) {
       win?.close();
-
       this.store.error.set(error instanceof Error ? error.message : 'No se pudo reservar. Probá de nuevo.');
     } finally {
       this.sending.set(false);
@@ -63,9 +62,7 @@ export class BookingSection {
   }
 
   private focusField(field: MissingField): void {
-    const selector =
-      field === 'date' ? '.days .opt' : field === 'time' ? '.times .opt' : field === 'name' ? '#fName' : '#fPhone';
-
+    const selector = field === 'date' ? '.days .opt' : field === 'time' ? '.times .opt' : field === 'name' ? '#fName' : '#fPhone';
     this.host.querySelector<HTMLElement>(selector)?.focus();
   }
 }
