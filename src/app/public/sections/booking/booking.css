@@ -185,7 +185,7 @@
 
 .booking-form .form-control::placeholder { color: rgba(235, 247, 245, 0.48); opacity: 1; }
 .booking-form .form-control:focus { color: #ffffff; background-color: rgba(5, 31, 35, 0.90); border-color: #0eb0a4; box-shadow: 0 0 0 0.2rem rgba(14, 176, 164, 0.18); }
-.booking-form textarea.form-control { min-height: 96px; resize: vertical; }
+.booking-form textarea.form-control { min-height: 96px; height: 110px; max-height: 160px; resize: vertical; overflow-y: auto; }
 .step { display: grid; gap: 10px; min-width: 0; }
 
 .opt {

@@ -193,7 +193,7 @@ test.describe('Reserva de turnos - Masajes', () => {
     );
 
     await booking.expectSelectedDayAndTime();
-    await booking.expectSummary();
+    const displayedPrice = await booking.expectSummary();
 
     const popupPromise = page.waitForEvent('popup');
 
@@ -230,7 +230,7 @@ test.describe('Reserva de turnos - Masajes', () => {
       'Hola! Quiero reservar un turno de masajes.',
     );
 
-    expect(message).toContain('Precio: $25.000');
+    expect(message).toContain(`Precio: ${displayedPrice}`);
     expect(message).toContain('Nombre: Ezequiel Prueba');
     expect(message).toContain('Teléfono: 1123456789');
 

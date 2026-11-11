@@ -71,8 +71,13 @@ export class BookingPage {
     await this.reserveButton.click();
   }
 
-  async expectSummary(): Promise<void> {
-    await expect(this.summary).toContainText('$25.000');
+  async expectSummary(): Promise<string> {
+    const summaryText = await this.summary.innerText();
+    const price = summaryText.match(/Precio\s*(\$[\d.]+)/);
+
+    expect(price).not.toBeNull();
+
+    return price![1];
   }
 
   async expectSelectedDayAndTime(): Promise<void> {

@@ -33,6 +33,12 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () =>
           import('./treatments/treatments').then(m => m.Treatments),
       },
+      {
+        path: 'prices',
+        loadComponent: () =>
+          import('./prices/prices').then(m => m.Prices),
+      },
+
     ],
   },
 ];

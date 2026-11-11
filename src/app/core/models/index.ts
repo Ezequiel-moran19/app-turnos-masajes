@@ -29,6 +29,7 @@ export interface BookingRecord {
   customer_phone: string;
   customer_email: string | null;
   service_id: string | null;
+  price: number;
   booking_date: string;
   start_time: string;
   end_time: string;

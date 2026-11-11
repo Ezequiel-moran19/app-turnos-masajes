@@ -4,12 +4,11 @@ import { ScheduleService } from './services/schedule.service';
 import { DayOption, MissingField, ScheduleExceptionRecord, WeeklyScheduleRecord,} from './models';
 import { CONTACTS } from './site.config';
 import { BookingAccessService } from './services/booking-access.service';
+import { PricingService } from './services/pricing.service';
 
 const HORIZON_DAYS = 14;
 const LEAD_MINUTES = 120;
 
-// Configuración temporal del turno general.
-const BOOKING_PRICE = 25000;
 const BOOKING_DURATION_MINUTES = 60;
 
 const pad = (n: number): string => String(n).padStart(2, '0');
@@ -33,6 +32,7 @@ export class BookingStore {
   private readonly bookings = inject(BookingService);
   private readonly schedule = inject(ScheduleService);
   private readonly bookingAccess = inject(BookingAccessService);
+  private readonly pricing = inject(PricingService);
   private readonly privateBookingUrl = signal('');
 
   readonly name = signal('');
@@ -47,7 +47,20 @@ export class BookingStore {
   private readonly exceptions = signal<ScheduleExceptionRecord[]>([]);
   private readonly taken = signal<string[]>([]);
   private readonly availabilityFailed = signal(false);
-  readonly priceText = computed( () => '$' + BOOKING_PRICE.toLocaleString('es-AR') );
+  readonly price = signal<number | null>(null);
+
+  readonly priceText = computed(() => {
+    const value = this.price();
+
+    if (value === null) {
+      return 'Precio no disponible';
+    }
+
+    return '$' + value.toLocaleString('es-AR', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    });
+  });
 
   readonly dayOptions = computed<DayOption[]>(() => {
     const selected = this.selectedDate();
@@ -101,16 +114,37 @@ export class BookingStore {
   }
 
   private async init(): Promise<void> {
-    try {
-      const [weekly, exceptions] = await Promise.all([ this.schedule.getWeekly(), this.schedule.getExceptions() ]);
+    const results = await Promise.allSettled([
+      this.schedule.getWeekly(),
+      this.schedule.getExceptions(),
+      this.pricing.getGeneral(),
+    ]);
 
-      this.weekly.set(weekly);
-      this.exceptions.set(exceptions);
-    } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'No se pudieron cargar los datos para reservar.');
-    } finally {
-      this.loading.set(false);
+    const errors: string[] = [];
+
+    if (results[0].status === 'fulfilled') {
+      this.weekly.set(results[0].value);
+    } else {
+      errors.push('No se pudieron cargar los horarios.');
     }
+
+    if (results[1].status === 'fulfilled') {
+      this.exceptions.set(results[1].value);
+    } else {
+      errors.push('No se pudieron cargar las excepciones.');
+    }
+
+    if (results[2].status === 'fulfilled') {
+      this.price.set(results[2].value.price);
+    } else {
+      errors.push('No se pudo consultar el precio vigente.');
+    }
+
+    if (errors.length > 0) {
+      this.error.set(errors.join(' '));
+    }
+
+    this.loading.set(false);
   }
 
   private slotsFor(key: string): string[] {
@@ -194,6 +228,8 @@ export class BookingStore {
     if (this.availabilityFailed()) {
       throw new Error('No se pudo verificar la disponibilidad.');
     }
+    const currentService = await this.pricing.getGeneral();
+    this.price.set(currentService.price);
 
     // Generar token privado y su hash.
     const { token, hash } = await this.bookingAccess.createToken();
